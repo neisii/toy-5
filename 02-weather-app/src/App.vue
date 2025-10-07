@@ -1,0 +1,56 @@
+<script setup lang="ts">
+import { useWeatherStore } from './stores/weather';
+import SearchBar from './components/SearchBar.vue';
+import CurrentWeather from './components/CurrentWeather.vue';
+import LoadingSpinner from './components/LoadingSpinner.vue';
+import ErrorMessage from './components/ErrorMessage.vue';
+
+const weatherStore = useWeatherStore();
+
+function handleSearch(city: string) {
+  weatherStore.fetchWeather(city);
+}
+</script>
+
+<template>
+  <div class="app">
+    <div class="container">
+      <h1 class="title">날씨 검색 앱</h1>
+
+      <SearchBar @search="handleSearch" />
+
+      <LoadingSpinner v-if="weatherStore.loading" />
+
+      <ErrorMessage
+        v-else-if="weatherStore.error"
+        :message="weatherStore.error"
+      />
+
+      <CurrentWeather
+        v-else-if="weatherStore.currentWeather"
+        :weather="weatherStore.currentWeather"
+      />
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.title {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 2rem 0;
+}
+</style>
