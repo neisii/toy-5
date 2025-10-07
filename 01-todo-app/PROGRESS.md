@@ -81,27 +81,113 @@
 
 ---
 
+## ✅ 완료된 작업 (계속)
+
+### 2. Todo 앱 기능 구현 및 테스트 ✓
+
+**완료 날짜**: 2025-10-07
+
+#### 구현 내용
+
+**기능 구현:**
+- ✅ Todo 타입 정의 (`src/types/todo.ts`)
+- ✅ LocalStorage 유틸리티 (`src/utils/storage.ts`)
+- ✅ Zustand 스토어 (`src/store/useTodoStore.ts`)
+- ✅ TodoInput 컴포넌트 - 할 일 추가
+- ✅ TodoItem 컴포넌트 - 개별 항목 표시/완료/삭제
+- ✅ TodoList 컴포넌트 - 목록 표시 및 필터링
+- ✅ App.tsx 통합
+- ✅ Tailwind CSS 스타일링
+
+**Playwright 테스트 (8개 모두 통과):**
+- ✅ 할 일 추가 테스트
+- ✅ 빈 문자열 추가 방지 테스트
+- ✅ 할 일 완료 처리 테스트
+- ✅ 할 일 삭제 테스트
+- ✅ 필터링 - 완료된 항목만 보기
+- ✅ 필터링 - 진행중 항목만 보기
+- ✅ LocalStorage 데이터 유지 테스트
+- ✅ 통계 정보 표시 테스트
+
+#### 기술적 결정 사항
+
+1. **Type-only imports 사용**
+   - 이유: Vite의 모듈 해석 문제 해결
+   - `import { Todo }` → `import type { Todo }`
+   - TypeScript type만 import할 때 명시적으로 표시
+
+2. **Tailwind CSS v3 사용**
+   - 이유: Tailwind v4의 PostCSS 플러그인 변경사항 때문
+   - v4는 `@tailwindcss/postcss` 별도 패키지 필요
+   - v3로 다운그레이드하여 안정성 확보
+
+3. **Playwright webServer 설정**
+   - `reuseExistingServer: true` - 기존 서버 재사용
+   - `timeout: 120000` - 충분한 대기 시간
+   - 개발 서버가 이미 실행 중일 때 활용
+
+#### 발생한 이슈 및 해결
+
+**이슈 1**: Tailwind CSS v4 PostCSS 오류
+- 증상: `[postcss] It looks like you're trying to use tailwindcss directly as a PostCSS plugin`
+- 원인: Tailwind v4에서 PostCSS 플러그인이 별도 패키지로 분리됨
+- 해결: Tailwind CSS를 v3.4.0으로 다운그레이드
+
+**이슈 2**: React 앱이 렌더링되지 않음 (#root가 비어있음)
+- 증상: Playwright 테스트에서 `input[name="todo"]`를 찾을 수 없음
+- 원인: TypeScript type export 관련 Vite 모듈 해석 오류
+- 에러: `The requested module '/src/types/todo.ts' does not provide an export named 'Todo'`
+- 해결: 모든 type import를 `import type { ... }`로 변경
+
+**이슈 3**: Playwright 테스트 타임아웃
+- 증상: 페이지 로드 후 요소를 찾지 못함
+- 원인: React 앱 렌더링 실패로 DOM이 비어있음
+- 해결: 근본 원인(이슈 2)을 해결하여 자동으로 해결됨
+
+#### 파일 구조 (최종)
+```
+01-todo-app/
+├── src/
+│   ├── components/
+│   │   ├── TodoInput.tsx       ✓
+│   │   ├── TodoList.tsx        ✓
+│   │   └── TodoItem.tsx        ✓
+│   ├── store/
+│   │   └── useTodoStore.ts     ✓
+│   ├── types/
+│   │   └── todo.ts             ✓
+│   ├── utils/
+│   │   └── storage.ts          ✓
+│   ├── App.tsx                 ✓
+│   ├── main.tsx
+│   └── index.css               ✓
+├── tests/
+│   ├── todo.spec.ts            ✓ (8/8 통과)
+│   └── simple.spec.ts          (진단용)
+├── playwright.config.ts        ✓
+├── tailwind.config.js          ✓
+├── package.json
+└── PROGRESS.md
+```
+
+---
+
 ## 🚧 현재 진행 중
 
-**없음** - 다음 단계 대기 중
+**없음** - Todo 앱 기본 기능 완료
 
 ---
 
 ## 📍 다음 단계
 
-### 1. Todo 기능 구현
-- [ ] Todo 타입 정의 (`src/types/todo.ts`)
-- [ ] Zustand 스토어 생성 (`src/store/useTodoStore.ts`)
-- [ ] TodoInput 컴포넌트
-- [ ] TodoList 컴포넌트
-- [ ] TodoItem 컴포넌트
-- [ ] LocalStorage 연동
+### 1. README.md 체크리스트 업데이트
+- [ ] 기능 구현 체크리스트 업데이트
+- [ ] 테스트 작성 체크리스트 업데이트
 
-### 2. Playwright 테스트 작성
-- [ ] 할 일 추가 테스트
-- [ ] 할 일 삭제 테스트
-- [ ] 완료 처리 테스트
-- [ ] LocalStorage 지속성 테스트
+### 2. 추가 기능 구현 (선택사항)
+- [ ] 할 일 수정 기능
+- [ ] 드래그 앤 드롭
+- [ ] 다크 모드
 
 ---
 
