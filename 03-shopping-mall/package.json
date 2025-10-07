@@ -1,0 +1,31 @@
+{
+  "name": "03-shopping-mall",
+  "version": "1.0.0",
+  "description": "**난이도**: ⭐⭐⭐ 중급   **개발 시간**: 3-5일   **Playwright 학습 효과**: ⭐⭐⭐⭐   **실무 유사도**: ⭐⭐⭐⭐⭐",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@playwright/test": "^1.56.0",
+    "json-server": "^1.0.0-beta.3",
+    "next": "^14.2.33",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "@types/react": "^19.2.2",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "맥북 프로 M3",
+      "price": 2500000,
+      "category": "electronics",
+      "description": "최신 M3 칩 탑재",
+      "image": "https://via.placeholder.com/300",
+      "stock": 10
+    },
+    {
+      "id": 2,
+      "name": "나이키 에어맥스",
+      "price": 150000,
+      "category": "fashion",
+      "description": "편안한 운동화",
+      "image": "https://via.placeholder.com/300",
+      "stock": 25
+    },
+    {
+      "id": 3,
+      "name": "아이폰 15 Pro",
+      "price": 1500000,
+      "category": "electronics",
+      "description": "티타늄 디자인",
+      "image": "https://via.placeholder.com/300",
+      "stock": 15
+    },
+    {
+      "id": 4,
+      "name": "소니 헤드폰",
+      "price": 350000,
+      "category": "electronics",
+      "description": "노이즈 캔슬링",
+      "image": "https://via.placeholder.com/300",
+      "stock": 30
+    },
+    {
+      "id": 5,
+      "name": "아디다스 트랙탑",
+      "price": 89000,
+      "category": "fashion",
+      "description": "클래식 디자인",
+      "image": "https://via.placeholder.com/300",
+      "stock": 50
+    },
+    {
+      "id": 6,
+      "name": "이케아 책상",
+      "price": 120000,
+      "category": "furniture",
+      "description": "심플한 디자인",
+      "image": "https://via.placeholder.com/300",
+      "stock": 20
+    },
+    {
+      "id": 7,
+      "name": "삼성 갤럭시 탭",
+      "price": 800000,
+      "category": "electronics",
+      "description": "11인치 태블릿",
+      "image": "https://via.placeholder.com/300",
+      "stock": 12
+    },
+    {
+      "id": 8,
+      "name": "자바 완벽 가이드",
+      "price": 35000,
+      "category": "books",
+      "description": "프로그래밍 서적",
+      "image": "https://via.placeholder.com/300",
+      "stock": 100
+    },
+    {
+      "id": 9,
+      "name": "나이키 축구공",
+      "price": 45000,
+      "category": "sports",
+      "description": "FIFA 공인구",
+      "image": "https://via.placeholder.com/300",
+      "stock": 40
+    },
+    {
+      "id": 10,
+      "name": "LG 모니터",
+      "price": 450000,
+      "category": "electronics",
+      "description": "27인치 4K",
+      "image": "https://via.placeholder.com/300",
+      "stock": 8
+    },
+    {
+      "id": 11,
+      "name": "유니클로 티셔츠",
+      "price": 19000,
+      "category": "fashion",
+      "description": "베이직 티셔츠",
+      "image": "https://via.placeholder.com/300",
+      "stock": 200
+    },
+    {
+      "id": 12,
+      "name": "이케아 의자",
+      "price": 80000,
+      "category": "furniture",
+      "description": "인체공학 의자",
+      "image": "https://via.placeholder.com/300",
+      "stock": 35
+    },
+    {
+      "id": 13,
+      "name": "iPad Air",
+      "price": 950000,
+      "category": "electronics",
+      "description": "10.9인치",
+      "image": "https://via.placeholder.com/300",
+      "stock": 18
+    },
+    {
+      "id": 14,
+      "name": "리액트 완벽 가이드",
+      "price": 38000,
+      "category": "books",
+      "description": "리액트 서적",
+      "image": "https://via.placeholder.com/300",
+      "stock": 80
+    },
+    {
+      "id": 15,
+      "name": "아디다스 운동화",
+      "price": 120000,
+      "category": "fashion",
+      "description": "러닝화",
+      "image": "https://via.placeholder.com/300",
+      "stock": 60
+    },
+    {
+      "id": 16,
+      "name": "요가 매트",
+      "price": 35000,
+      "category": "sports",
+      "description": "미끄럼 방지",
+      "image": "https://via.placeholder.com/300",
+      "stock": 90
+    },
+    {
+      "id": 17,
+      "name": "소파",
+      "price": 650000,
+      "category": "furniture",
+      "description": "3인용 소파",
+      "image": "https://via.placeholder.com/300",
+      "stock": 5
+    },
+    {
+      "id": 18,
+      "name": "캐논 카메라",
+      "price": 1800000,
+      "category": "electronics",
+      "description": "미러리스 카메라",
+      "image": "https://via.placeholder.com/300",
+      "stock": 7
+    },
+    {
+      "id": 19,
+      "name": "타입스크립트 핸드북",
+      "price": 32000,
+      "category": "books",
+      "description": "TS 서적",
+      "image": "https://via.placeholder.com/300",
+      "stock": 70
+    },
+    {
+      "id": 20,
+      "name": "덤벨 세트",
+      "price": 85000,
+      "category": "sports",
+      "description": "5kg~20kg",
+      "image": "https://via.placeholder.com/300",
+      "stock": 25
+    }
+  ]
+}
