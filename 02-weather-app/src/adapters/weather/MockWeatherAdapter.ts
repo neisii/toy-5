@@ -1,0 +1,131 @@
+import type { WeatherProvider } from './WeatherProvider';
+import type {
+  CurrentWeather,
+  QuotaInfo,
+  WeatherProviderConfig,
+  CurrentWeatherData,
+  WeatherCondition,
+  LocationInfo
+} from '@/types/domain/weather';
+import { loadMockWeatherData, getMockWeatherByCity } from '@/data/loader';
+import type { CityWeather } from '@/data/types';
+
+/**
+ * Mock weather provider adapter
+ *
+ * This adapter uses local JSON data instead of making API calls.
+ * Useful for development and testing without API keys.
+ */
+export class MockWeatherAdapter implements WeatherProvider {
+  readonly name = 'Mock';
+  private config: WeatherProviderConfig;
+
+  constructor(config?: WeatherProviderConfig) {
+    this.config = config || { name: 'Mock' };
+  }
+
+  /**
+   * Get current weather for a city from mock data
+   */
+  async getCurrentWeather(cityName: string): Promise<CurrentWeather> {
+    const cityWeather = await getMockWeatherByCity(cityName);
+
+    if (!cityWeather) {
+      throw new Error(`City not found in mock data: ${cityName}`);
+    }
+
+    return this.transformToDomain(cityWeather);
+  }
+
+  /**
+   * Check quota status (Mock provider has unlimited quota)
+   */
+  async checkQuota(): Promise<QuotaInfo> {
+    return {
+      used: 0,
+      limit: Infinity,
+      resetTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
+      percentage: 0,
+      status: 'normal'
+    };
+  }
+
+  /**
+   * Validate configuration (Mock provider always valid)
+   */
+  async validateConfig(): Promise<boolean> {
+    // Check if mock data can be loaded
+    try {
+      await loadMockWeatherData();
+      return true;
+    } catch (error) {
+      throw new Error('Failed to load mock weather data');
+    }
+  }
+
+  /**
+   * Transform mock data to domain types
+   */
+  private transformToDomain(cityWeather: CityWeather): CurrentWeather {
+    const location: LocationInfo = {
+      name: cityWeather.location.nameEn,
+      nameKo: cityWeather.location.nameKo,
+      country: cityWeather.location.country,
+      coordinates: {
+        lat: cityWeather.location.lat,
+        lon: cityWeather.location.lon
+      },
+      timezone: cityWeather.location.timezone
+    };
+
+    const current: CurrentWeatherData = {
+      temperature: cityWeather.current.temperature,
+      feelsLike: cityWeather.current.feelsLike,
+      humidity: cityWeather.current.humidity,
+      pressure: cityWeather.current.pressure,
+      windSpeed: cityWeather.current.windSpeed,
+      windDirection: cityWeather.current.windDirection,
+      cloudiness: cityWeather.current.cloudiness,
+      visibility: cityWeather.current.visibility,
+      uvIndex: cityWeather.current.uvIndex
+    };
+
+    const weather: WeatherCondition = {
+      main: this.getMainCondition(cityWeather.weather.icon),
+      description: cityWeather.weather.descriptionEn,
+      descriptionKo: cityWeather.weather.description,
+      icon: cityWeather.weather.icon
+    };
+
+    const timestamp = cityWeather.timestamp
+      ? new Date(cityWeather.timestamp)
+      : new Date();
+
+    return {
+      location,
+      current,
+      weather,
+      timestamp
+    };
+  }
+
+  /**
+   * Get main weather condition from icon code
+   */
+  private getMainCondition(icon: string): string {
+    const mainConditions: Record<string, string> = {
+      '01': 'Clear',
+      '02': 'Clouds',
+      '03': 'Clouds',
+      '04': 'Clouds',
+      '09': 'Rain',
+      '10': 'Rain',
+      '11': 'Thunderstorm',
+      '13': 'Snow',
+      '50': 'Mist'
+    };
+
+    const iconPrefix = icon.substring(0, 2);
+    return mainConditions[iconPrefix] || 'Unknown';
+  }
+}
