@@ -1,10 +1,14 @@
-import type {
-  CurrentWeather,
-  QuotaInfo,
-  WeatherProviderConfig,
-} from "@/types/domain/weather";
+import type { WeatherProviderConfig } from "@/types/domain/weather";
+import type { CurrentWeather, QuotaInfo } from "@/types/domain/weather";
 import { MockWeatherAdapter } from "./MockWeatherAdapter";
 import { OpenWeatherAdapter } from "./OpenWeatherAdapter";
+import { WeatherAPIAdapter } from "./WeatherAPIAdapter";
+import { OpenMeteoAdapter } from "./OpenMeteoAdapter";
+
+/**
+ * Re-export types for use in adapters
+ */
+export type { CurrentWeather, QuotaInfo };
 
 /**
  * Weather provider interface
@@ -64,9 +68,12 @@ export function createWeatherProvider(
       }
       return new OpenWeatherAdapter(config);
     case "weatherapi":
-      throw new Error("WeatherAPI adapter not implemented yet");
+      if (!config || !config.apiKey) {
+        throw new Error("WeatherAPIAdapter requires API key in configuration");
+      }
+      return new WeatherAPIAdapter(config.apiKey);
     case "openmeteo":
-      throw new Error("Open-Meteo adapter not implemented yet");
+      return new OpenMeteoAdapter();
     default:
       throw new Error(`Unknown provider type: ${type}`);
   }

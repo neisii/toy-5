@@ -54,6 +54,21 @@ const percentageFormatted = computed(() => {
   if (!props.status) return '0';
   return props.status.quotaInfo.percentage.toFixed(1);
 });
+
+const isUnlimited = computed(() => {
+  if (!props.status) return false;
+  return props.status.quotaInfo.limit === Number.POSITIVE_INFINITY;
+});
+
+const usageText = computed(() => {
+  if (!props.status) return '';
+
+  if (isUnlimited.value) {
+    return `${props.status.quotaInfo.used} 사용 (무제한)`;
+  }
+
+  return `${props.status.quotaInfo.used} / ${props.status.quotaInfo.limit} 사용 (${percentageFormatted.value}%)`;
+});
 </script>
 
 <template>
@@ -64,7 +79,7 @@ const percentageFormatted = computed(() => {
     </div>
 
     <div class="quota-info">
-      <div class="quota-bar-container">
+      <div v-if="!isUnlimited" class="quota-bar-container">
         <div
           class="quota-bar"
           :class="`quota-bar-${statusColor}`"
@@ -74,10 +89,9 @@ const percentageFormatted = computed(() => {
 
       <div class="quota-details">
         <span class="quota-text">
-          {{ status.quotaInfo.used }} / {{ status.quotaInfo.limit }} 사용
-          ({{ percentageFormatted }}%)
+          {{ usageText }}
         </span>
-        <span class="reset-time" v-if="status.quotaInfo.resetTime">
+        <span class="reset-time" v-if="!isUnlimited && status.quotaInfo.resetTime">
           리셋: {{ resetTimeFormatted }}
         </span>
       </div>
