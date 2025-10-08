@@ -2,7 +2,7 @@
 
 **Date**: 2025-10-08  
 **Severity**: HIGH  
-**Status**: RESOLVED ✅
+**Status**: RESOLVED (with second occurrence) ⚠️
 
 ## Incident Summary
 
@@ -128,13 +128,21 @@ git push origin main --force
 2. ✅ Use `.env.example` with placeholder values only
 3. ✅ Verify `.env` is in `.gitignore` before any commits
 4. ✅ Review all documentation files before committing
+5. ⚠️ **CRITICAL**: Double-check any file mentioning "API key" before commit
 
-### Recommended (Future Implementation)
-1. 🔄 Install `git-secrets` or similar pre-commit hook
-2. 🔄 Enable GitHub Advanced Security features
-3. 🔄 Add secret scanning to CI/CD pipeline
-4. 🔄 Document security review checklist
-5. 🔄 Use secret management service for production keys
+### Recommended (URGENT after second occurrence)
+1. 🔴 **CRITICAL**: Install `git-secrets` or similar pre-commit hook
+2. 🔴 **CRITICAL**: Implement automated secret scanning
+3. 🔄 Enable GitHub Advanced Security features
+4. 🔄 Add secret scanning to CI/CD pipeline
+5. 🔄 Document security review checklist
+6. 🔄 Use secret management service for production keys
+
+### AI Assistant Rules (Permanent)
+1. 🔒 **NEVER write actual API keys in documentation files**
+2. 🔒 **ALWAYS mask API keys when writing to *.md, *.txt files**
+3. 🔒 **ONLY use actual keys in `.env` file** (git-ignored)
+4. 🔒 **Before any git commit: scan for exposed keys**
 
 ## Security Best Practices (Updated)
 
@@ -207,3 +215,36 @@ VITE_OPENWEATHER_API_KEY=your_openweathermap_api_key_here
 2. ⏭️ WeatherAPI.com key verification deferred to Phase 3 (adapter implementation)
 
 **Incident Status**: CLOSED - All critical actions completed. No unauthorized usage detected.
+
+---
+
+## ⚠️ Second Occurrence - 2025-10-08 (Same Day)
+
+**Incident**: API keys exposed again in `docs/PHASE_3_PLAN.md`
+
+**Timeline**:
+1. **Exposure**: Commit `42ef815` - PHASE_3_PLAN.md contained actual WeatherAPI key
+2. **Detection**: User identified immediately during code review
+3. **Mitigation**: Commit `2d7b091` - Masked keys in documentation
+4. **Resolution**: New WeatherAPI key generated: `eaa7**********************250810`
+
+**Exposed Credentials** (Second Occurrence):
+- OpenWeatherMap API Key: `6ee11a75c5db9be7153ef7d5a1f9552e` (already revoked)
+- WeatherAPI.com API Key: `4fc732b449b14468b80102642250810` (REVOKED)
+
+**New Credentials**:
+- WeatherAPI.com API Key: `eaa7da9004ee47bc919135224250810` (active)
+
+**Root Cause Analysis**:
+- Same mistake repeated: Planning document included actual API keys
+- Security checklist not followed during documentation
+- No pre-commit validation for API key patterns
+
+**Immediate Actions Taken**:
+1. ✅ Masked API keys in PHASE_3_PLAN.md (commit `2d7b091`)
+2. ✅ Revoked exposed WeatherAPI key
+3. ✅ Generated new WeatherAPI key
+4. ✅ Updated .env with new key
+5. ✅ Updated security incident report
+
+**Incident Status**: RESOLVED - Second occurrence addressed. Keys rotated again.
