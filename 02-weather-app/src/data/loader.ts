@@ -1,6 +1,6 @@
-import type { MockWeatherData, CityWeather } from './types';
-import { expandKeys } from './keyMap';
-import mockData from './mockWeather.json';
+import type { MockWeatherData, CityWeather } from "./types";
+import { expandKeys } from "./keyMap";
+import mockData from "./mockWeather.json";
 
 let cachedData: MockWeatherData | null = null;
 
@@ -49,7 +49,9 @@ export async function loadMockWeatherData(): Promise<MockWeatherData> {
  * console.log(testWeather.weather.description); // "비"
  * ```
  */
-export async function getMockWeatherByCity(cityName: string): Promise<CityWeather | null> {
+export async function getMockWeatherByCity(
+  cityName: string,
+): Promise<CityWeather | null> {
   const data = await loadMockWeatherData();
 
   // Check regular cities first
@@ -81,7 +83,9 @@ export async function getMockWeatherByCity(cityName: string): Promise<CityWeathe
  * console.log(allCities); // ["서울", ..., "테스트_비", "테스트_눈", ...]
  * ```
  */
-export async function getAvailableCities(includeTestCities = false): Promise<string[]> {
+export async function getAvailableCities(
+  includeTestCities = false,
+): Promise<string[]> {
   const data = await loadMockWeatherData();
 
   const regularCities = Object.keys(data.cities);
@@ -116,32 +120,36 @@ export async function validateMockData(): Promise<boolean> {
 
     // Check version exists
     if (!data.version) {
-      console.error('Mock data missing version');
+      console.error("Mock data missing version");
       return false;
     }
 
     // Check cities exist
     if (!data.cities || Object.keys(data.cities).length === 0) {
-      console.error('Mock data missing cities');
+      console.error("Mock data missing cities");
       return false;
     }
 
     // Check default exists
     if (!data.default) {
-      console.error('Mock data missing default city');
+      console.error("Mock data missing default city");
       return false;
     }
 
     // Validate structure of one city
     const firstCity = Object.values(data.cities)[0];
+    if (!firstCity) {
+      console.error("Mock data has no cities");
+      return false;
+    }
     if (!firstCity.location || !firstCity.current || !firstCity.weather) {
-      console.error('Mock data city structure invalid');
+      console.error("Mock data city structure invalid");
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('Error validating mock data:', error);
+    console.error("Error validating mock data:", error);
     return false;
   }
 }

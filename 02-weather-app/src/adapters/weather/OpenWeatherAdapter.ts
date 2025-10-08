@@ -1,13 +1,13 @@
-import type { WeatherProvider } from './WeatherProvider';
+import type { WeatherProvider } from "./WeatherProvider";
 import type {
   CurrentWeather,
   QuotaInfo,
   WeatherProviderConfig,
   CurrentWeatherData,
   WeatherCondition,
-  LocationInfo
-} from '@/types/domain/weather';
-import { getCityCoordinate } from '@/config/cityCoordinates';
+  LocationInfo,
+} from "@/types/domain/weather";
+import { getCityCoordinate } from "@/config/cityCoordinates";
 
 /**
  * OpenWeatherMap API response type (Current Weather API 2.5)
@@ -54,7 +54,7 @@ interface OpenWeatherResponse {
 /**
  * LocalStorage key for quota tracking
  */
-const QUOTA_STORAGE_KEY = 'openweather_quota';
+const QUOTA_STORAGE_KEY = "openweather_quota";
 
 /**
  * Quota data structure in LocalStorage
@@ -72,17 +72,17 @@ interface QuotaData {
  * Free tier: 1,000 calls/day, no credit card required
  */
 export class OpenWeatherAdapter implements WeatherProvider {
-  readonly name = 'OpenWeatherMap';
+  readonly name = "OpenWeatherMap";
   private config: WeatherProviderConfig;
   private baseUrl: string;
   private apiKey: string;
 
   constructor(config: WeatherProviderConfig) {
     this.config = config;
-    this.baseUrl = config.baseUrl || 'https://api.openweathermap.org/data/2.5';
+    this.baseUrl = config.baseUrl || "https://api.openweathermap.org/data/2.5";
 
     if (!config.apiKey) {
-      throw new Error('OpenWeatherMap API key is required');
+      throw new Error("OpenWeatherMap API key is required");
     }
     this.apiKey = config.apiKey;
   }
@@ -99,31 +99,33 @@ export class OpenWeatherAdapter implements WeatherProvider {
 
     // Check quota before making request
     const quota = await this.checkQuota();
-    if (quota.status === 'exceeded') {
-      throw new Error('API quota exceeded. Please wait until reset time.');
+    if (quota.status === "exceeded") {
+      throw new Error("API quota exceeded. Please wait until reset time.");
     }
 
     try {
       // Make API request
       const url = new URL(`${this.baseUrl}/weather`);
-      url.searchParams.append('lat', cityCoord.lat.toString());
-      url.searchParams.append('lon', cityCoord.lon.toString());
-      url.searchParams.append('appid', this.apiKey);
-      url.searchParams.append('units', 'metric');
-      url.searchParams.append('lang', 'en');
+      url.searchParams.append("lat", cityCoord.lat.toString());
+      url.searchParams.append("lon", cityCoord.lon.toString());
+      url.searchParams.append("appid", this.apiKey);
+      url.searchParams.append("units", "metric");
+      url.searchParams.append("lang", "en");
 
       const response = await fetch(url.toString(), {
-        timeout: this.config.timeout || 10000
+        timeout: this.config.timeout || 10000,
       } as RequestInit);
 
       // Handle rate limit response
       if (response.status === 429) {
         this.incrementQuota();
-        throw new Error('API rate limit exceeded (HTTP 429)');
+        throw new Error("API rate limit exceeded (HTTP 429)");
       }
 
       if (!response.ok) {
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText}`,
+        );
       }
 
       const data: OpenWeatherResponse = await response.json();
@@ -136,7 +138,7 @@ export class OpenWeatherAdapter implements WeatherProvider {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Failed to fetch weather data from OpenWeatherMap');
+      throw new Error("Failed to fetch weather data from OpenWeatherMap");
     }
   }
 
@@ -155,12 +157,12 @@ export class OpenWeatherAdapter implements WeatherProvider {
     }
 
     const percentage = (quotaData.used / quotaData.limit) * 100;
-    let status: 'normal' | 'warning' | 'exceeded' = 'normal';
+    let status: "normal" | "warning" | "exceeded" = "normal";
 
     if (percentage >= 95) {
-      status = 'exceeded';
+      status = "exceeded";
     } else if (percentage >= 80) {
-      status = 'warning';
+      status = "warning";
     }
 
     return {
@@ -168,7 +170,7 @@ export class OpenWeatherAdapter implements WeatherProvider {
       limit: quotaData.limit,
       resetTime,
       percentage,
-      status
+      status,
     };
   }
 
@@ -177,23 +179,23 @@ export class OpenWeatherAdapter implements WeatherProvider {
    */
   async validateConfig(): Promise<boolean> {
     if (!this.apiKey) {
-      throw new Error('API key is required');
+      throw new Error("API key is required");
     }
 
     // Test API key with a simple request (서울)
     try {
       const url = new URL(`${this.baseUrl}/weather`);
-      url.searchParams.append('lat', '37.5683');
-      url.searchParams.append('lon', '126.9778');
-      url.searchParams.append('appid', this.apiKey);
-      url.searchParams.append('units', 'metric');
+      url.searchParams.append("lat", "37.5683");
+      url.searchParams.append("lon", "126.9778");
+      url.searchParams.append("appid", this.apiKey);
+      url.searchParams.append("units", "metric");
 
       const response = await fetch(url.toString(), {
-        timeout: 5000
+        timeout: 5000,
       } as RequestInit);
 
       if (response.status === 401) {
-        throw new Error('Invalid API key');
+        throw new Error("Invalid API key");
       }
 
       return response.ok;
@@ -201,7 +203,7 @@ export class OpenWeatherAdapter implements WeatherProvider {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Failed to validate API configuration');
+      throw new Error("Failed to validate API configuration");
     }
   }
 
@@ -211,7 +213,7 @@ export class OpenWeatherAdapter implements WeatherProvider {
   private transformToDomain(
     data: OpenWeatherResponse,
     nameKo: string,
-    nameEn: string
+    nameEn: string,
   ): CurrentWeather {
     const location: LocationInfo = {
       name: nameEn,
@@ -219,8 +221,8 @@ export class OpenWeatherAdapter implements WeatherProvider {
       country: data.sys.country,
       coordinates: {
         lat: data.coord.lat,
-        lon: data.coord.lon
-      }
+        lon: data.coord.lon,
+      },
     };
 
     const current: CurrentWeatherData = {
@@ -232,15 +234,19 @@ export class OpenWeatherAdapter implements WeatherProvider {
       windDirection: data.wind.deg,
       cloudiness: data.clouds.all,
       visibility: data.visibility,
-      uvIndex: 0 // Current Weather API doesn't provide UV index
+      uvIndex: 0, // Current Weather API doesn't provide UV index
     };
 
     const weatherInfo = data.weather[0];
+    if (!weatherInfo) {
+      throw new Error("Weather information not available in API response");
+    }
+
     const weather: WeatherCondition = {
       main: weatherInfo.main,
       description: weatherInfo.description,
       descriptionKo: this.translateDescription(weatherInfo.description),
-      icon: weatherInfo.icon
+      icon: weatherInfo.icon,
     };
 
     const timestamp = new Date(data.dt * 1000);
@@ -249,7 +255,7 @@ export class OpenWeatherAdapter implements WeatherProvider {
       location,
       current,
       weather,
-      timestamp
+      timestamp,
     };
   }
 
@@ -259,22 +265,22 @@ export class OpenWeatherAdapter implements WeatherProvider {
    */
   private translateDescription(description: string): string {
     const translations: Record<string, string> = {
-      'clear sky': '맑음',
-      'few clouds': '구름 조금',
-      'scattered clouds': '구름 많음',
-      'broken clouds': '구름 많음',
-      'overcast clouds': '흐림',
-      'light rain': '약한 비',
-      'moderate rain': '비',
-      'heavy rain': '강한 비',
-      'shower rain': '소나기',
-      'thunderstorm': '천둥번개',
-      'snow': '눈',
-      'light snow': '약한 눈',
-      'heavy snow': '강한 눈',
-      'mist': '안개',
-      'fog': '안개',
-      'haze': '실안개'
+      "clear sky": "맑음",
+      "few clouds": "구름 조금",
+      "scattered clouds": "구름 많음",
+      "broken clouds": "구름 많음",
+      "overcast clouds": "흐림",
+      "light rain": "약한 비",
+      "moderate rain": "비",
+      "heavy rain": "강한 비",
+      "shower rain": "소나기",
+      thunderstorm: "천둥번개",
+      snow: "눈",
+      "light snow": "약한 눈",
+      "heavy snow": "강한 눈",
+      mist: "안개",
+      fog: "안개",
+      haze: "실안개",
     };
 
     return translations[description.toLowerCase()] || description;
@@ -303,17 +309,22 @@ export class OpenWeatherAdapter implements WeatherProvider {
    */
   private createNewQuotaData(): QuotaData {
     const now = new Date();
-    const tomorrow = new Date(Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate() + 1,
-      0, 0, 0, 0
-    ));
+    const tomorrow = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() + 1,
+        0,
+        0,
+        0,
+        0,
+      ),
+    );
 
     const data: QuotaData = {
       used: 0,
       limit: 1000,
-      resetTime: tomorrow.toISOString()
+      resetTime: tomorrow.toISOString(),
     };
 
     localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(data));

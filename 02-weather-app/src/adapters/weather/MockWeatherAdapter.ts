@@ -1,14 +1,14 @@
-import type { WeatherProvider } from './WeatherProvider';
+import type { WeatherProvider } from "./WeatherProvider";
 import type {
   CurrentWeather,
   QuotaInfo,
   WeatherProviderConfig,
   CurrentWeatherData,
   WeatherCondition,
-  LocationInfo
-} from '@/types/domain/weather';
-import { loadMockWeatherData, getMockWeatherByCity } from '@/data/loader';
-import type { CityWeather } from '@/data/types';
+  LocationInfo,
+} from "@/types/domain/weather";
+import { loadMockWeatherData, getMockWeatherByCity } from "@/data/loader";
+import type { CityWeather } from "@/data/types";
 
 /**
  * Mock weather provider adapter
@@ -17,11 +17,10 @@ import type { CityWeather } from '@/data/types';
  * Useful for development and testing without API keys.
  */
 export class MockWeatherAdapter implements WeatherProvider {
-  readonly name = 'Mock';
-  private config: WeatherProviderConfig;
+  readonly name = "Mock";
 
-  constructor(config?: WeatherProviderConfig) {
-    this.config = config || { name: 'Mock' };
+  constructor(_config?: WeatherProviderConfig) {
+    // Mock provider doesn't need configuration
   }
 
   /**
@@ -46,7 +45,7 @@ export class MockWeatherAdapter implements WeatherProvider {
       limit: Infinity,
       resetTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
       percentage: 0,
-      status: 'normal'
+      status: "normal",
     };
   }
 
@@ -59,7 +58,7 @@ export class MockWeatherAdapter implements WeatherProvider {
       await loadMockWeatherData();
       return true;
     } catch (error) {
-      throw new Error('Failed to load mock weather data');
+      throw new Error("Failed to load mock weather data");
     }
   }
 
@@ -68,14 +67,14 @@ export class MockWeatherAdapter implements WeatherProvider {
    */
   private transformToDomain(cityWeather: CityWeather): CurrentWeather {
     const location: LocationInfo = {
-      name: cityWeather.location.nameEn,
-      nameKo: cityWeather.location.nameKo,
+      name: cityWeather.location.name_en || cityWeather.location.name,
+      nameKo: cityWeather.location.name_ko,
       country: cityWeather.location.country,
       coordinates: {
-        lat: cityWeather.location.lat,
-        lon: cityWeather.location.lon
+        lat: cityWeather.location.latitude,
+        lon: cityWeather.location.longitude,
       },
-      timezone: cityWeather.location.timezone
+      timezone: cityWeather.location.timezone,
     };
 
     const current: CurrentWeatherData = {
@@ -87,14 +86,14 @@ export class MockWeatherAdapter implements WeatherProvider {
       windDirection: cityWeather.current.windDirection,
       cloudiness: cityWeather.current.cloudiness,
       visibility: cityWeather.current.visibility,
-      uvIndex: cityWeather.current.uvIndex
+      uvIndex: cityWeather.current.uvIndex,
     };
 
     const weather: WeatherCondition = {
       main: this.getMainCondition(cityWeather.weather.icon),
-      description: cityWeather.weather.descriptionEn,
+      description: cityWeather.weather.description_en,
       descriptionKo: cityWeather.weather.description,
-      icon: cityWeather.weather.icon
+      icon: cityWeather.weather.icon,
     };
 
     const timestamp = cityWeather.timestamp
@@ -105,7 +104,7 @@ export class MockWeatherAdapter implements WeatherProvider {
       location,
       current,
       weather,
-      timestamp
+      timestamp,
     };
   }
 
@@ -114,18 +113,18 @@ export class MockWeatherAdapter implements WeatherProvider {
    */
   private getMainCondition(icon: string): string {
     const mainConditions: Record<string, string> = {
-      '01': 'Clear',
-      '02': 'Clouds',
-      '03': 'Clouds',
-      '04': 'Clouds',
-      '09': 'Rain',
-      '10': 'Rain',
-      '11': 'Thunderstorm',
-      '13': 'Snow',
-      '50': 'Mist'
+      "01": "Clear",
+      "02": "Clouds",
+      "03": "Clouds",
+      "04": "Clouds",
+      "09": "Rain",
+      "10": "Rain",
+      "11": "Thunderstorm",
+      "13": "Snow",
+      "50": "Mist",
     };
 
     const iconPrefix = icon.substring(0, 2);
-    return mainConditions[iconPrefix] || 'Unknown';
+    return mainConditions[iconPrefix] || "Unknown";
   }
 }

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
 import type { ProviderType } from '@/services/weather/WeatherService';
 
 interface Props {
@@ -7,7 +6,7 @@ interface Props {
   availableProviders: ProviderType[];
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const emit = defineEmits<{
   (e: 'change', provider: ProviderType): void;

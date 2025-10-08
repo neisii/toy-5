@@ -1,4 +1,10 @@
-import type { CurrentWeather, QuotaInfo, WeatherProviderConfig } from '@/types/domain/weather';
+import type {
+  CurrentWeather,
+  QuotaInfo,
+  WeatherProviderConfig,
+} from "@/types/domain/weather";
+import { MockWeatherAdapter } from "./MockWeatherAdapter";
+import { OpenWeatherAdapter } from "./OpenWeatherAdapter";
 
 /**
  * Weather provider interface
@@ -46,19 +52,21 @@ export interface WeatherProvider {
  * @throws Error if provider type is unknown
  */
 export function createWeatherProvider(
-  type: 'mock' | 'openweather' | 'weatherapi' | 'openmeteo',
-  config?: WeatherProviderConfig
+  type: "mock" | "openweather" | "weatherapi" | "openmeteo",
+  config?: WeatherProviderConfig,
 ): WeatherProvider {
   switch (type) {
-    case 'mock':
-      // Import dynamically to avoid bundling all providers
-      return new (require('./MockWeatherAdapter').MockWeatherAdapter)(config);
-    case 'openweather':
-      return new (require('./OpenWeatherAdapter').OpenWeatherAdapter)(config);
-    case 'weatherapi':
-      throw new Error('WeatherAPI adapter not implemented yet');
-    case 'openmeteo':
-      throw new Error('Open-Meteo adapter not implemented yet');
+    case "mock":
+      return new MockWeatherAdapter(config);
+    case "openweather":
+      if (!config) {
+        throw new Error("OpenWeatherAdapter requires configuration");
+      }
+      return new OpenWeatherAdapter(config);
+    case "weatherapi":
+      throw new Error("WeatherAPI adapter not implemented yet");
+    case "openmeteo":
+      throw new Error("Open-Meteo adapter not implemented yet");
     default:
       throw new Error(`Unknown provider type: ${type}`);
   }
