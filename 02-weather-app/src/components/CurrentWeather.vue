@@ -34,6 +34,10 @@ const formattedTime = computed(() => {
     minute: '2-digit'
   });
 });
+
+const windSpeed = computed(() => {
+  return props.weather.current.windSpeed.toFixed(2);
+});
 </script>
 
 <template>
@@ -65,7 +69,7 @@ const formattedTime = computed(() => {
       </div>
       <div class="detail-item">
         <span class="detail-label">풍속</span>
-        <span class="detail-value">{{ weather.current.windSpeed }} m/s</span>
+        <span class="detail-value">{{ windSpeed }} m/s</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">기압</span>
