@@ -1,14 +1,27 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { useWeatherStore } from './stores/weather';
+import type { ProviderType } from './services/weather/WeatherService';
 import SearchBar from './components/SearchBar.vue';
 import CurrentWeather from './components/CurrentWeather.vue';
 import LoadingSpinner from './components/LoadingSpinner.vue';
 import ErrorMessage from './components/ErrorMessage.vue';
+import ProviderSelector from './components/ProviderSelector.vue';
+import QuotaStatus from './components/QuotaStatus.vue';
 
 const weatherStore = useWeatherStore();
 
+onMounted(async () => {
+  // Update provider status on mount
+  await weatherStore.updateProviderStatus();
+});
+
 function handleSearch(city: string) {
   weatherStore.fetchWeather(city);
+}
+
+async function handleProviderChange(provider: ProviderType) {
+  await weatherStore.switchProvider(provider);
 }
 </script>
 
@@ -16,6 +29,14 @@ function handleSearch(city: string) {
   <div class="app">
     <div class="container">
       <h1 class="title">날씨 검색 앱</h1>
+
+      <ProviderSelector
+        :current-provider="weatherStore.currentProvider"
+        :available-providers="weatherStore.getAvailableProviders()"
+        @change="handleProviderChange"
+      />
+
+      <QuotaStatus :status="weatherStore.providerStatus" />
 
       <SearchBar @search="handleSearch" />
 
