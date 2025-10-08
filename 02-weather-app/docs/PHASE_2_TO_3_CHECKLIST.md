@@ -181,9 +181,10 @@ npx playwright test
 
 **설정된 변수**:
 ```bash
-VITE_OPENWEATHER_API_KEY=ad8d9ef4b10a050bb675e82e37db5d8b
-VITE_WEATHERAPI_API_KEY=07a91abe89324b62b9d94213250810
+VITE_OPENWEATHER_API_KEY=ad8d**********************db5d8b
+VITE_WEATHERAPI_API_KEY=07a9**********************250810
 ```
+**참고**: 실제 API 키는 `.env` 파일에 저장 (git-ignored)
 
 **확인**:
 - [x] `.env` 파일 존재 확인 ✅
