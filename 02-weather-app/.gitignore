@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Session context files (may contain sensitive data)
+docs/session-context-*.txt
+**/session-context-*.txt

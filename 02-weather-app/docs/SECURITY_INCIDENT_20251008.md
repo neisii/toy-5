@@ -232,8 +232,8 @@ VITE_OPENWEATHER_API_KEY=your_openweathermap_api_key_here
 - OpenWeatherMap API Key: `6ee11a75c5db9be7153ef7d5a1f9552e` (already revoked)
 - WeatherAPI.com API Key: `4fc732b449b14468b80102642250810` (REVOKED)
 
-**New Credentials**:
-- WeatherAPI.com API Key: `eaa7da9004ee47bc919135224250810` (active)
+**New Credentials** (Second Occurrence):
+- WeatherAPI.com API Key: `eaa7**********************250810` (revoked after third exposure)
 
 **Root Cause Analysis**:
 - Same mistake repeated: Planning document included actual API keys
@@ -248,3 +248,43 @@ VITE_OPENWEATHER_API_KEY=your_openweathermap_api_key_here
 5. ✅ Updated security incident report
 
 **Incident Status**: RESOLVED - Second occurrence addressed. Keys rotated again.
+
+---
+
+## 🔴 Third Occurrence - 2025-10-08 (Same Day)
+
+**Incident**: API key exposed in security incident document itself
+
+**Timeline**:
+1. **Exposure**: Commit `3a8e92f` - SECURITY_INCIDENT_20251008.md Line 236 contained actual WeatherAPI key
+2. **Detection**: User identified during manual review of docs/ folder
+3. **Mitigation**: Key masked in documentation
+4. **Resolution**: New WeatherAPI key generated: `4bac**********************250810` (실제 키는 .env 참조)
+
+**Exposed Credentials** (Third Occurrence):
+- WeatherAPI.com API Key: `eaa7da9004ee47bc919135224250810` (REVOKED)
+
+**New Credentials** (Third Occurrence):
+- WeatherAPI.com API Key: `4bac**********************250810` (active, 실제 키는 .env 파일 참조)
+
+**Root Cause Analysis**:
+- Security incident report itself exposed the "new" key in "Resolution" section
+- Ironic failure: Document meant to track security exposed credentials
+- Pattern: "New Credentials" sections are high-risk for exposure
+
+**Immediate Actions Taken**:
+1. ✅ Masked API key in SECURITY_INCIDENT_20251008.md
+2. ✅ Revoked exposed WeatherAPI key (`eaa7...250810`)
+3. ✅ Generated new WeatherAPI key
+4. ✅ Updated .env with new key
+5. ✅ Deleted session-context file with exposed keys
+6. ✅ Updated .gitignore to exclude session-context files
+
+**Permanent Rules Established**:
+1. 🔒 API keys NEVER written in full in any documentation
+2. 🔒 Always mask format: `4bac**********************250810`
+3. 🔒 Always add note: "실제 키는 .env 파일 참조"
+4. 🔒 AI Assistant MUST ask before writing any API key: ".env에만 업데이트하면 되는 사항인가요?"
+5. 🔒 Before every commit: Scan docs/ for 32+ char alphanumeric strings near VITE_, API, key, token
+
+**Incident Status**: RESOLVED - Third occurrence addressed. Permanent safeguards implemented.
