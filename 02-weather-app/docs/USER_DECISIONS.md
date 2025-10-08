@@ -138,9 +138,10 @@
 
 **결정일**: 2025-10-08
 
-**일일 리셋 로직**:
-- **B (UTC 기준)**
-- 이유: OpenWeatherMap API가 UTC 00:00에 quota 리셋
+**Rate Limit 추적**:
+- **분당 60회 제한 (Rolling Window)**
+- 이유: OpenWeatherMap Free Tier는 60 calls/minute로 제한 (API enforced)
+- 구현: LocalStorage에 최근 1분간의 호출 타임스탬프 배열 저장
 
 **분당 제한 감지**:
 - HTTP 429 응답 감지 (필수)

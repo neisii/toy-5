@@ -43,7 +43,7 @@
 
 ### 1. API Provider Strategy
 - **Selected Providers**: OpenWeatherMap 2.5 (Current Weather API), WeatherAPI.com, Open-Meteo, Mock
-- **Rationale**: OpenWeatherMap 2.5 Current Weather API is still active and free (1,000 calls/day, no credit card)
+- **Rationale**: OpenWeatherMap 2.5 Current Weather API is still active and free (60 calls/minute, no credit card)
 - **Note**: One Call API 2.5 was deprecated June 2024, but we're using Current Weather API
 
 ### 2. Provider Selection UI

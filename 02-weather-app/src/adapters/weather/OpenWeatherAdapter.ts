@@ -60,16 +60,21 @@ const QUOTA_STORAGE_KEY = "openweather_quota";
  * Quota data structure in LocalStorage
  */
 interface QuotaData {
-  used: number;
-  limit: number;
-  resetTime: string; // ISO 8601 format (UTC)
+  callsThisMinute: number[]; // Array of timestamps (ms) for calls in current minute
+  dailyUsed: number; // Total calls today
+  dailyLimit: number; // 1,000 calls/day (soft limit, not enforced by free tier)
+  resetTime: string; // Daily reset time ISO 8601 format (UTC)
 }
 
 /**
  * OpenWeatherMap adapter
  *
  * Uses OpenWeatherMap Current Weather API 2.5
- * Free tier: 1,000 calls/day, no credit card required
+ * Free tier limits:
+ * - 60 calls/minute (hard limit, enforced by API)
+ * - No daily limit on free tier, but recommended to stay under reasonable usage
+ * - 5 day / 3 hour forecast available
+ * - No credit card required
  */
 export class OpenWeatherAdapter implements WeatherProvider {
   readonly name = "OpenWeatherMap";
@@ -97,10 +102,13 @@ export class OpenWeatherAdapter implements WeatherProvider {
       throw new Error(`City coordinates not found: ${cityName}`);
     }
 
-    // Check quota before making request
+    // Check quota before making request (minute-based limit)
     const quota = await this.checkQuota();
     if (quota.status === "exceeded") {
-      throw new Error("API quota exceeded. Please wait until reset time.");
+      throw new Error(
+        `API rate limit exceeded (60 calls/minute). ` +
+          `Wait ${Math.ceil((quota.resetTime.getTime() - Date.now()) / 1000)} seconds.`,
+      );
     }
 
     try {
@@ -144,31 +152,52 @@ export class OpenWeatherAdapter implements WeatherProvider {
 
   /**
    * Check current API quota status
+   *
+   * OpenWeatherMap Free Tier: 60 calls/minute (hard limit)
    */
   async checkQuota(): Promise<QuotaInfo> {
     const quotaData = this.getQuotaData();
-    const now = new Date();
-    const resetTime = new Date(quotaData.resetTime);
+    const now = Date.now();
+    const oneMinuteAgo = now - 60 * 1000;
 
-    // Reset quota if reset time has passed
-    if (now >= resetTime) {
-      this.resetQuota();
+    // Clean up old calls (older than 1 minute)
+    const recentCalls = quotaData.callsThisMinute.filter(
+      (timestamp) => timestamp > oneMinuteAgo,
+    );
+    quotaData.callsThisMinute = recentCalls;
+
+    // Save cleaned data
+    localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(quotaData));
+
+    // Check daily reset
+    const dailyResetTime = new Date(quotaData.resetTime);
+    if (new Date() >= dailyResetTime) {
+      this.resetDailyQuota();
       return this.checkQuota(); // Recursive call after reset
     }
 
-    const percentage = (quotaData.used / quotaData.limit) * 100;
-    let status: "normal" | "warning" | "exceeded" = "normal";
+    // Minute-based limit (60 calls/minute)
+    const callsThisMinute = recentCalls.length;
+    const minuteLimit = 60;
+    const percentage = (callsThisMinute / minuteLimit) * 100;
 
-    if (percentage >= 95) {
+    let status: "normal" | "warning" | "exceeded" = "normal";
+    if (callsThisMinute >= minuteLimit) {
       status = "exceeded";
     } else if (percentage >= 80) {
       status = "warning";
     }
 
+    // Next reset time is when oldest call expires (1 minute from oldest call)
+    const oldestCall = recentCalls[0];
+    const nextResetTime = oldestCall
+      ? new Date(oldestCall + 60 * 1000)
+      : new Date(now + 60 * 1000);
+
     return {
-      used: quotaData.used,
-      limit: quotaData.limit,
-      resetTime,
+      used: callsThisMinute,
+      limit: minuteLimit,
+      resetTime: nextResetTime,
       percentage,
       status,
     };
@@ -322,8 +351,9 @@ export class OpenWeatherAdapter implements WeatherProvider {
     );
 
     const data: QuotaData = {
-      used: 0,
-      limit: 1000,
+      callsThisMinute: [],
+      dailyUsed: 0,
+      dailyLimit: 1000, // Soft limit for tracking
       resetTime: tomorrow.toISOString(),
     };
 
@@ -333,17 +363,25 @@ export class OpenWeatherAdapter implements WeatherProvider {
 
   /**
    * Increment quota usage counter
+   * Records timestamp for minute-based tracking
    */
   private incrementQuota(): void {
     const data = this.getQuotaData();
-    data.used += 1;
+    const now = Date.now();
+
+    // Add current timestamp to minute tracking
+    data.callsThisMinute.push(now);
+
+    // Increment daily counter
+    data.dailyUsed += 1;
+
     localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
   }
 
   /**
-   * Reset quota counter
+   * Reset daily quota counter (called at UTC midnight)
    */
-  private resetQuota(): void {
+  private resetDailyQuota(): void {
     const data = this.createNewQuotaData();
     localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
   }

@@ -70,7 +70,7 @@ GET https://api.openweathermap.org/data/3.0/onecall?lat=37.5&lon=127&appid=KEY
 
 **특징**:
 - 올인원 통합 API
-- 무료 1,000 calls/day (카드 등록 필수)
+- 무료 60 calls/minute (카드 등록 필수)
 - AI 기반 날씨 요약 포함
 - 히스토리 데이터 (1979년~)
 - 1.5년 장기 예보
@@ -130,7 +130,7 @@ Option B (3.0 마이그레이션):
 ```
 ✅ 기술적 제약:
 - 60 calls/minute (분당 제한)
-- 1,000 calls/day (일일 제한)
+- 60 calls/minute (일일 제한)
 ```
 
 ### 제한 감지 방법
@@ -191,7 +191,7 @@ export class RateLimitTracker {
       return false; // ❌ 분당 제한 초과
     }
     
-    // 1,000 calls/day 체크
+    // 60 calls/minute 체크
     if (this.dayCallCount >= 1000) {
       return false; // ❌ 일일 제한 초과
     }

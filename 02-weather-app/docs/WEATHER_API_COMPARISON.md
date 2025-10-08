@@ -12,8 +12,8 @@
 | **API 버전** | v2.5 | v1 (명시 없음) | v1 |
 | **엔드포인트** | `/data/2.5/weather` | `/v1/current.json` | `/v1/forecast` |
 | **인증** | API Key 필수 | API Key 필수 | 비상업용 불필요 |
-| **무료 한도** | 1,000 calls/day | 1,000,000 calls/month | 무제한 (비상업) |
-| **리셋 기준** | UTC 00:00 | 월별 (매월 1일) | 해당 없음 |
+| **무료 한도** | 60 calls/minute | 1,000,000 calls/month | 무제한 (비상업) |
+| **리셋 기준** | 1분 rolling | 월별 (매월 1일) | 해당 없음 |
 | **응답 형식** | JSON, XML, HTML | JSON, XML | JSON |
 | **한글 지원** | ✅ (`lang=kr`) | ✅ | ❌ (영문만) |
 | **아이콘 제공** | ✅ (코드 + URL) | ✅ (URL) | ✅ (코드만) |
@@ -35,8 +35,9 @@
 ```
 ✅ 기술적 제약:
 - API Key 필수 (환경 변수: VITE_OPENWEATHER_API_KEY)
-- 무료: 60 calls/minute, 1,000 calls/day
-- 일일 리셋: UTC 00:00
+- 무료: 60 calls/minute (hard limit, API enforced)
+- 리셋: Rolling 1-minute window
+- 예보: 5 day / 3 hour forecast
 - HTTPS 필수
 
 ⚠️ 제약사항:

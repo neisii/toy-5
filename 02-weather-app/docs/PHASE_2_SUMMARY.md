@@ -81,7 +81,7 @@ Phase 2에서는 AI-DLC 방법론의 Construction 단계를 완료했습니다. 
 4. **`src/adapters/weather/OpenWeatherAdapter.ts`** (302 lines)
    - OpenWeatherMap Current Weather API 2.5 연동
    - LocalStorage 기반 quota 추적
-   - UTC 기준 일일 리셋 (1,000 calls/day)
+   - UTC 기준 일일 리셋 (60 calls/minute)
    - HTTP 429 감지 및 처리
 
 5. **`src/services/weather/WeatherService.ts`** (196 lines)

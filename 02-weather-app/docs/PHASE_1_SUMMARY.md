@@ -50,7 +50,7 @@ Phase 1에서는 AI-DLC 방법론의 Inception 단계를 완료했습니다. 현
 1. **강한 결합**: Pinia Store가 OpenWeatherMap API 응답 구조에 직접 의존
 2. **교체 불가**: 다른 API 사용 시 전체 코드 수정 필요
 3. **테스트 어려움**: 실제 API 키 없이 개발 불가
-4. **과금 위험**: 무료 quota (1,000 calls/day) 초과 시 과금
+4. **과금 위험**: 무료 quota (60 calls/minute) 초과 시 과금
 5. **확장성 제약**: 새 API 추가 시 기존 코드 영향
 
 ### 의존성 분석
@@ -120,7 +120,7 @@ Phase 1에서 해결한 8개 핵심 기술 질문:
 - **One Call API 3.0**: 신용카드 필요, AI 기능 포함
 - **Current Weather API 2.5**: 여전히 active, 무료, 신용카드 불필요 ← **선택**
 
-**결정**: Current Weather API 2.5 사용 (무료, 1,000 calls/day, 신용카드 불필요)
+**결정**: Current Weather API 2.5 사용 (무료, 60 calls/minute, 신용카드 불필요)
 
 ### Question 2: Rate Limit 감지 방법
 
