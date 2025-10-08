@@ -31,7 +31,7 @@
 **Base URL**: `https://api.weatherapi.com/v1`
 
 **현재 계정 정보**:
-- API Key: `4fc732b449b14468b80102642250810`
+- API Key: `4fc7**********************250810` (실제 키는 .env 파일 참조)
 - Pro Plus Plan Trial: 2025/10/22까지
 - Free Plan Limit: 월 1,000,000 호출
 
@@ -438,8 +438,8 @@ npm run dev
 cat .env
 
 # 필요한 변수:
-# VITE_OPENWEATHER_API_KEY=6ee11a75c5db9be7153ef7d5a1f9552e
-# VITE_WEATHERAPI_API_KEY=4fc732b449b14468b80102642250810
+# VITE_OPENWEATHER_API_KEY=<your_openweathermap_key>
+# VITE_WEATHERAPI_API_KEY=<your_weatherapi_key>
 ```
 
 ### 3. Phase 3 시작
