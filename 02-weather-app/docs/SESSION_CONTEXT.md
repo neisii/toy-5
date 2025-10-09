@@ -479,38 +479,78 @@ For detailed information, refer to:
 
 **Key Learning**: Session context lost after Claude terms acceptance, but successfully recovered and completed all Phase 4-5 work.
 
-### Phase 6: Weather Accuracy Tracking (Planning)
+### Phase 6: Weather Accuracy Tracking (Planning → In Progress)
 **Date**: 2025-10-09
 
-**Objective**: Build a system to track weather prediction accuracy over 30+ days to determine which provider is most accurate.
+**Objective**: Build a system to track weather prediction accuracy over 30+ days to determine which provider has the most consistent forecasts.
 
-**Key Design Decisions** (Pending User Approval):
+**User Decisions** (Confirmed):
 
-**Question 1**: Data Storage Strategy
-- Option A: IndexedDB (frontend-only, fast start, free)
-- Option B: Backend server + DB (stable, $5-20/month)
-- Option C: Hybrid (start with IndexedDB, migrate later)
+✅ **Question 2**: "Actual Weather" Ground Truth
+- **Decision**: Relative Consistency Analysis (self-consistency)
+- **Rationale**: Avoid circular logic of consensus averaging
+- **Method**: Compare each provider's "forecast vs own observation" consistency
+- **KMA API**: Reserved for future (currently unavailable)
 
-**Question 2**: "Actual Weather" Ground Truth
-- Option A: Consensus (average of 3 providers, no extra API)
-- Option B: KMA (Korea Meteorological Administration API, official data)
+✅ **Question 3**: City Coverage
+- **Decision**: Seoul only (Option B)
+- **Rationale**: Fast PoC, 4-8 week validation
+- **Expansion**: 8 cities after verification
 
-**Question 3**: City Coverage
-- Option A: 8 cities (Seoul, Busan, Incheon, Daegu, Daejeon, Gwangju, Ulsan, Jeju)
-- Option B: Seoul only (faster PoC, expand later)
+✅ **Question 4**: AI Analysis Frequency
+- **Decision**: Weekly (Option B)
+- **Rationale**: Quick feedback for PoC, $0.20/month for 4 weeks
+- **Schedule**: Week 1-4 weekly analysis, then monthly
 
-**Question 4**: AI Analysis Frequency
-- Option A: Monthly ($0.05/month, sufficient data)
-- Option B: Weekly ($0.20/month, more frequent updates)
+✅ **Question 1**: Data Storage Strategy
+- **Decision**: GitHub Actions + JSON files (Option C variant)
+- **Rationale**: 
+  - Completely free (2,000 min/month)
+  - Git-based version control
+  - No database setup required
+  - Auto-commit data files
+- **Case Studies Reviewed**:
+  1. GitHub Actions (⭐⭐⭐⭐⭐): Chosen
+  2. Vercel Cron (⭐⭐⭐): Limited to 2 jobs
+  3. cron-job.org (⭐⭐): Too complex
+
+**macOS Sleep Analysis** (Completed):
+- Cron jobs don't run during sleep
+- launchd can catch up missed schedules on wake
+- **Recommended**: pmset + launchd (auto-wake at midnight, minimal battery impact)
+- **Reference**: `docs/MACOS_SLEEP_LOCAL_SERVER_ANALYSIS.md`
 
 **Core Workflow**:
 ```
-Day 0 (00:00): Collect tomorrow's forecast from all providers → IndexedDB
-Day 1 (00:00): Collect today's current weather from all providers → Compare with Day 0 forecast → Calculate accuracy
-Day 30: Run AI analysis (GPT-4o) → Generate provider rankings
+Day 0 (00:00 UTC): GitHub Action → Collect tomorrow's forecast → Commit to Git
+Day 1 (00:00 UTC): GitHub Action → Collect today's weather → Compare with Day 0 forecast → Calculate consistency
+Weekly: GitHub Action → AI analysis (GPT-4o) → Generate provider rankings
 ```
 
-**Reference Document**: `docs/WEATHER_ACCURACY_TRACKING_DESIGN.md`
+**Data Structure**:
+```
+data/
+├── predictions/2025-10-09.json     # Tomorrow's forecasts
+├── observations/2025-10-09.json    # Today's actual weather
+└── analysis/week-1.json            # Weekly AI analysis results
+```
+
+**TalkPython Weather API Investigation** (New):
+- **Status**: Verified working, returns valid data
+- **Rate Limit**: 50 unique lookups/hour
+- **Limitations**: 
+  - No Forecast API (Phase 6 incompatible)
+  - Educational use only restriction
+- **Decision Pending**: Add to Phase 5 (current weather only) or skip
+- **Reference**: `docs/TALKPYTHON_API_ANALYSIS.md`
+
+**Implementation Plan**: `docs/PHASE_6_PLAN.md`
+- Week 1: Forecast API integration + GitHub Actions setup
+- Week 2: Consistency calculation + Weekly AI analysis
+- Week 3-4: Admin UI + Data visualization
+- Week 5-8: Continuous data collection + Final analysis
+
+**Cost**: $0.20/month (OpenAI API only, GitHub Actions free)
 
 ---
 
@@ -526,18 +566,40 @@ To continue this project in a new Claude session:
 6. Always distinguish technical constraints from UX recommendations
 7. Always use Perplexity AI for web research (primary requirement)
 
-**Current Status**: Phase 5 complete. All core features implemented. 85 tests passing. **Phase 6 (Weather Accuracy Tracking) in planning stage - awaiting user decisions on 4 key questions.**
+**Current Status**: Phase 5 complete. 85 tests passing. **Phase 6 (Weather Accuracy Tracking) planning complete - ready to start Week 1 implementation.**
 
 **Test Coverage**: 80%+ on core logic (Adapters, WeatherService), 50% overall (includes Vue components)
 
-**Pending User Decisions for Phase 6**:
-1. Data storage: IndexedDB vs Backend vs Hybrid
-2. Ground truth: Consensus vs KMA API
-3. City coverage: 8 cities vs Seoul only
-4. AI analysis frequency: Monthly vs Weekly
+**Confirmed Decisions for Phase 6**:
+1. ✅ Data storage: GitHub Actions + JSON files (free, Git-based)
+2. ✅ Ground truth: Relative consistency analysis (self-consistency)
+3. ✅ City coverage: Seoul only (PoC, expand later)
+4. ✅ AI analysis: Weekly ($0.20/month for 4 weeks)
+
+**Pending Decisions**:
+1. ⏳ TalkPython Weather API: Add to Phase 5 (current weather only) or skip?
+   - Pros: Provider diversity, educational fit
+   - Cons: "Educational use only" restriction, no Forecast API
+   - Recommended: Conditional addition (Phase 5 only, exclude from Phase 6)
+
+**Next Steps**:
+1. Decide on TalkPython API addition
+2. Start Phase 6 Week 1: Forecast API integration
+3. Setup GitHub Actions workflows
+
+**Recent Commits** (2025-10-09):
+- `6ce1934`: Phase 6 design document
+- `69f4d6f`: SESSION_CONTEXT update (Phase 4-5 completion)
+- `13097b9`: Phase 6 plan + macOS sleep analysis
+
+**Key Documents**:
+- `docs/PHASE_6_PLAN.md`: Week-by-week implementation plan
+- `docs/WEATHER_ACCURACY_TRACKING_DESIGN.md`: System architecture
+- `docs/MACOS_SLEEP_LOCAL_SERVER_ANALYSIS.md`: Local server analysis
+- `docs/TALKPYTHON_API_ANALYSIS.md`: TalkPython API evaluation
 
 ---
 
 *Document created: 2025-10-08*  
 *Last updated: 2025-10-09*  
-*Version: 2.1*
+*Version: 2.2*
