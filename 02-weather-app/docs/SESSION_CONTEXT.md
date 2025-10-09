@@ -89,7 +89,17 @@
 
 ## Critical User Feedback Patterns
 
-### 1. Technical Constraints vs User Experience
+### 1. Search Engine Usage Priority
+**User Request**: "검색 엔진을 활용하여 자료 조사를 할 때는 퍼플렉시티 ai를 최우선으로 활용한다"
+
+**Rule**: 
+- ✅ **Primary**: Use Perplexity AI for web research and documentation lookup
+- ✅ **Fallback**: Use other search engines only if Perplexity AI is unavailable
+- ✅ **Application**: API documentation, latest features, best practices, troubleshooting
+
+**Note**: Perplexity AI provides more accurate and up-to-date technical information than traditional search engines.
+
+### 2. Technical Constraints vs User Experience
 **User Request**: "앞으로는 기술적 제약과 사용자 경험을 구분해서 제안해줘"
 
 **Example**:
@@ -100,7 +110,7 @@
 
 **Application**: Always label recommendations as either technical constraint or UX consideration.
 
-### 2. Avoid Over-Engineering
+### 3. Avoid Over-Engineering
 **User Feedback**: Simplified reverse geocoding from full API integration to pre-defined coordinates
 
 **Learning**: 
@@ -108,7 +118,7 @@
 - YAGNI (You Aren't Gonna Need It) principle
 - User will specify when more complexity is needed
 
-### 3. Approval Pattern
+### 4. Approval Pattern
 **User Signal**: "이행" (proceed)
 - Used multiple times to approve plans and continue implementation
 - Indicates user has reviewed and approved the work

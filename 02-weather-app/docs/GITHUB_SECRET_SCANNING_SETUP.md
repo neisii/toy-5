@@ -1,23 +1,30 @@
-# GitHub Secret Scanning 설정 가이드
+# GitHub Secret Protection 설정 가이드
 
 **작성일**: 2025-10-08  
-**목적**: GitHub Secret Scanning 및 Push Protection 활성화 방법
+**최종 업데이트**: 2025-10-09  
+**목적**: GitHub Secret Protection (구 Secret Scanning) 활성화 방법
 
 ---
 
 ## 📋 개요
 
-GitHub Secret Scanning은 저장소에 푸시된 코드에서 **API 키, 토큰 등의 시크릿을 자동으로 탐지**하는 GitHub의 보안 기능입니다.
+GitHub Secret Protection은 저장소에 푸시된 코드에서 **API 키, 토큰 등의 시크릿을 자동으로 탐지**하는 GitHub의 보안 기능입니다.
+
+> **2025년 4월 1일 변경사항**: GitHub Advanced Security가 두 개의 독립적인 제품으로 분리되었습니다:
+> - **GitHub Secret Protection**: 시크릿 탐지 및 방지 (본 가이드)
+> - **GitHub Code Security**: 코드 보안 분석
 
 ### 주요 기능
 1. **Secret Scanning**: 이미 푸시된 코드에서 시크릿 탐지 (사후 감지)
 2. **Push Protection**: 시크릿 포함 시 푸시 차단 (사전 차단)
+3. **AI-detected passwords**: AI 기반 비밀번호 탐지 (2025년 신규)
+4. **Custom patterns**: 사용자 정의 시크릿 패턴 설정 (2025년 신규)
 
 ---
 
-## 🎯 활성화 방법
+## 🎯 활성화 방법 (2025년 최신)
 
-### 1. Repository 설정 페이지 접속
+### 방법 1: Advanced Security를 통한 활성화 (권장)
 
 ```
 1. GitHub 저장소 페이지로 이동
@@ -25,18 +32,24 @@ GitHub Secret Scanning은 저장소에 푸시된 코드에서 **API 키, 토큰 
 
 2. 상단 메뉴에서 "Settings" 클릭
 
-3. 왼쪽 사이드바에서 "Security" 섹션 찾기
-   - "Code security and analysis" 클릭
+3. 왼쪽 사이드바 "Security" 섹션에서 "Advanced Security" 클릭
+
+4. "Secret Protection" 섹션에서 [Enable] 버튼 클릭
+
+5. 영향 검토 후 "Enable Secret Protection" 확인 버튼 클릭
+   ↓
+✅ Secret scanning alerts 자동 활성화됨
+✅ Push protection 포함됨 (Public 저장소 무료)
 ```
 
-### 2. Secret Scanning 활성화
+### 방법 2: Code security and analysis를 통한 활성화 (대체 방법)
 
 ```
-"Secret scanning" 섹션 찾기
-  ↓
-[Enable] 버튼 클릭
-  ↓
-✅ "Secret scanning alerts" 활성화됨
+1. Settings → Security → "Code security and analysis" 클릭
+
+2. "Secret scanning" 섹션에서 [Enable] 클릭
+
+3. "Push protection" 섹션에서 [Enable] 클릭 (선택사항)
 ```
 
 **기능**:
@@ -44,39 +57,41 @@ GitHub Secret Scanning은 저장소에 푸시된 코드에서 **API 키, 토큰 
 - 새로운 푸시마다 자동 스캔
 - 시크릿 발견 시 Security 탭에 알림
 - 저장소 관리자에게 이메일 발송
+- AI 기반 비밀번호 패턴 탐지 (2025년 신규)
 
-**요금**:
+**요금** (2025년 기준):
 - ✅ Public 저장소: **무료**
-- ❌ Private 저장소: GitHub Advanced Security 필요 (유료)
-
-### 3. Push Protection 활성화 (권장)
-
-```
-"Push protection" 섹션 찾기
-  ↓
-[Enable] 버튼 클릭
-  ↓
-✅ "Push protection" 활성화됨
-```
-
-**기능**:
-- 시크릿 포함 시 **푸시 전에 차단**
-- 즉시 에러 메시지 표시
-- 강제 푸시도 차단
-
-**요금**:
-- ✅ Public 저장소: **무료** (2023년부터)
-- ❌ Private 저장소: GitHub Advanced Security 필요 (유료)
+- ❌ Private 저장소: GitHub Secret Protection 필요 ($19/month per active committer)
+- ❌ Organization 저장소: GitHub Team plan 이상 + Secret Protection
 
 ---
 
-## 📸 설정 화면 예시
+## 📸 설정 화면 예시 (2025년 기준)
 
-### Code security and analysis 페이지
+### 방법 1: Advanced Security 페이지 (권장)
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│ Code security and analysis                          │
+│ Settings → Security → Advanced Security             │
+├─────────────────────────────────────────────────────┤
+│                                                       │
+│ Secret Protection                                    │
+│ ○ Disabled    [Enable]                              │
+│                                                       │
+│ Secret Protection includes secret scanning alerts,  │
+│ push protection, AI-detected passwords, and custom  │
+│ patterns to help detect and prevent secret leaks.   │
+│                                                       │
+│ [Enable Secret Protection]                          │
+│                                                       │
+└─────────────────────────────────────────────────────┘
+```
+
+### 방법 2: Code security and analysis 페이지 (대체)
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Settings → Security → Code security and analysis    │
 ├─────────────────────────────────────────────────────┤
 │                                                       │
 │ Secret scanning                                      │
@@ -92,6 +107,49 @@ GitHub Secret Scanning은 저장소에 푸시된 코드에서 **API 키, 토큰 
 │                                                       │
 └─────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 🏷️ 본 저장소의 실제 상태 (toy-5)
+
+### Secret Scanning
+- **상태**: ✅ **활성화 확인됨**
+- **확인 방법**: 3번의 API 키 노출 시 모두 이메일 알림 수신
+- **동작**: 정상 (푸시 후 몇 분 내 감지 및 알림)
+- **감지된 패턴**: OpenWeatherMap API Key, WeatherAPI.com API Key
+
+### Push Protection
+- **상태**: ❓ **동작 불확실**
+- **문제**: 3번의 API 키 노출 커밋이 모두 push 성공
+  - 커밋 `74677f7`: OpenWeatherMap + WeatherAPI 키 노출 → push 성공
+  - 커밋 `42ef815`: WeatherAPI 키 노출 → push 성공
+  - 커밋 `3a8e92f`: WeatherAPI 키 노출 → push 성공
+- **가능한 원인**:
+  1. Push Protection이 비활성화 상태
+  2. OpenWeatherMap/WeatherAPI 패턴이 Push Protection 미지원
+  3. Public 저장소에서 기본 비활성화 정책
+
+### 실제 방어 구조 (현재)
+
+```
+1차 방어: Husky Pre-commit Hook ✅ 설정됨
+  ↓
+  로컬 커밋 전 시크릿 검사
+  (.husky/pre-commit 스크립트)
+  
+2차 방어: Push Protection ❌ 작동 안 함
+  ↓
+  GitHub 푸시 전 차단 (비활성화 추정)
+  
+3차 방어: Secret Scanning ✅ 정상 작동
+  ↓
+  GitHub 푸시 후 이메일 알림
+```
+
+### 권장 사항
+1. ✅ **Husky Pre-commit Hook을 주요 방어선으로 활용** (현재 설정됨)
+2. ⚠️ **GitHub Settings에서 Push Protection 상태 확인 필요**
+3. ✅ **Secret Scanning은 백업 방어선으로 유지**
 
 ---
 
@@ -316,11 +374,18 @@ git push origin main
 
 ---
 
-## 📝 활성화 체크리스트
+## 📝 활성화 체크리스트 (2025년 최신)
 
-### 필수 단계
+### 필수 단계 - 방법 1 (권장)
 - [ ] GitHub 저장소 Settings 페이지 이동
-- [ ] Code security and analysis 섹션 찾기
+- [ ] Security → Advanced Security 섹션 클릭
+- [ ] Secret Protection [Enable] 버튼 클릭
+- [ ] 영향 검토 후 "Enable Secret Protection" 확인
+- [ ] 활성화 상태 확인 (Secret scanning + Push protection 자동 활성화)
+
+### 필수 단계 - 방법 2 (대체)
+- [ ] GitHub 저장소 Settings 페이지 이동
+- [ ] Security → Code security and analysis 섹션 클릭
 - [ ] Secret scanning [Enable] 클릭
 - [ ] Push protection [Enable] 클릭 (권장)
 - [ ] 활성화 상태 확인 (녹색 ● 표시)
@@ -328,6 +393,7 @@ git push origin main
 ### 확인 단계
 - [ ] Security 탭에서 "Secret scanning" 섹션 확인
 - [ ] 이전 커밋에서 감지된 알림 확인 (있을 경우)
+- [ ] Push protection 동작 확인 (시크릿 푸시 시도 시 차단)
 - [ ] 팀원에게 공지 (Push Protection 활성화됨)
 
 ### 문서 업데이트
@@ -380,7 +446,12 @@ git push origin main
 
 ## ✅ 요약
 
-### 즉시 실행
+### 즉시 실행 (2025년 권장 방법)
+1. **Settings** → **Security** → **Advanced Security**
+2. **Secret Protection** → **[Enable]**
+3. 확인 대화상자에서 **[Enable Secret Protection]** 클릭
+
+### 대체 방법
 1. **Settings** → **Security** → **Code security and analysis**
 2. **Secret scanning** → **[Enable]**
 3. **Push protection** → **[Enable]**
@@ -388,12 +459,24 @@ git push origin main
 ### 예상 시간
 - 설정: **1-2분**
 - 효과: **즉시**
+- 전체 히스토리 스캔: **몇 분 내 완료**
 
-### 비용
+### 비용 (2025년 기준)
 - Public 저장소: **무료** ✅
-- Private 저장소: GitHub Advanced Security 필요
+- Private 저장소: GitHub Secret Protection 필요 ($19/month per active committer)
+
+### 2025년 주요 변경사항
+- ✅ "Secret Protection"으로 브랜딩 변경
+- ✅ AI 기반 비밀번호 탐지 추가
+- ✅ 사용자 정의 패턴 설정 가능
+- ✅ 패턴 구성 기능 일반 공개 (GA)
 
 ---
 
-**마지막 업데이트**: 2025-10-08  
+**작성일**: 2025-10-08  
+**마지막 업데이트**: 2025-10-09  
 **다음 확인**: 설정 후 Security 탭에서 알림 확인
+
+**참고 문서**:
+- [GitHub Secret Protection 공식 문서](https://docs.github.com/en/code-security/secret-scanning/enabling-secret-scanning-features/enabling-secret-scanning-for-your-repository)
+- [2025년 변경사항 발표](https://github.blog/changelog/2025-03-04-introducing-github-secret-protection-and-github-code-security/)
