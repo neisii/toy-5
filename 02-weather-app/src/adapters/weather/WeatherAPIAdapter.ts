@@ -21,6 +21,7 @@ import type {
   QuotaInfo,
 } from "./WeatherProvider";
 import { weatherApiToStandard } from "../../types/domain/weatherIcon";
+import { getCityCoordinate } from "@/config/cityCoordinates";
 
 /**
  * WeatherAPI.com API 응답 타입
@@ -96,15 +97,24 @@ export class WeatherAPIAdapter implements WeatherProvider {
 
   /**
    * 현재 날씨 조회
+   *
+   * 한글 도시명 자동 변환:
+   * - 한글 입력 시 영문명으로 자동 변환하여 API 호출
+   * - 응답의 location.name은 한글명으로 복원
    */
   async getCurrentWeather(city: string): Promise<CurrentWeather> {
     try {
+      // 한글 → 영문 자동 변환
+      const cityData = getCityCoordinate(city);
+      const queryCity = cityData?.name_en || city;
+      const originalCityName = city; // 원본 도시명 보존
+
       const response = await axios.get<WeatherAPIResponse>(
         `${BASE_URL}/current.json`,
         {
           params: {
             key: this.apiKey,
-            q: city,
+            q: queryCity, // 영문명으로 API 호출
             aqi: "no", // Air Quality Index 제외
           },
         },
@@ -114,7 +124,14 @@ export class WeatherAPIAdapter implements WeatherProvider {
       this.incrementQuota();
 
       // 응답 → 도메인 타입 변환
-      return this.transformToDomain(response.data);
+      const currentWeather = this.transformToDomain(response.data);
+
+      // 한글명으로 복원 (cityData가 있으면)
+      if (cityData) {
+        currentWeather.location.name = cityData.name; // 한글명
+      }
+
+      return currentWeather;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;
