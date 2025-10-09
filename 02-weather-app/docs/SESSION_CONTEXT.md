@@ -13,7 +13,9 @@
 - Human makes all critical decisions
 - Progressive implementation with git tags per phase
 
-**Current Phase**: Completed Phase 5 (UX Improvements), ready for Phase 6 or new features
+**Current Phase**: Completed Phase 5 (UX Improvements), planning Phase 6 (Weather Accuracy Tracking)
+
+**Ultimate Goal**: Determine which weather provider has the highest prediction accuracy through 30+ days of data collection and AI-powered analysis.
 
 ---
 
@@ -203,9 +205,15 @@
 - [x] Core logic coverage: 80%+
 
 ### 📋 Future Considerations
-- [ ] Phase 6: E2E test expansion (optional)
+- [ ] Phase 6: Weather Accuracy Tracking System (in planning)
+  - Forecast API integration for all providers
+  - Daily prediction data collection (IndexedDB)
+  - 30-day accuracy comparison
+  - AI-powered provider ranking (GPT-4o)
+- [ ] Phase 7: E2E test expansion (optional)
 - [ ] Responsive design (user excluded from Phase 5)
 - [ ] See `docs/FUTURE_FEATURES.md` for AI analysis features
+- [ ] See `docs/WEATHER_ACCURACY_TRACKING_DESIGN.md` for Phase 6 detailed design
 
 ---
 
@@ -471,6 +479,39 @@ For detailed information, refer to:
 
 **Key Learning**: Session context lost after Claude terms acceptance, but successfully recovered and completed all Phase 4-5 work.
 
+### Phase 6: Weather Accuracy Tracking (Planning)
+**Date**: 2025-10-09
+
+**Objective**: Build a system to track weather prediction accuracy over 30+ days to determine which provider is most accurate.
+
+**Key Design Decisions** (Pending User Approval):
+
+**Question 1**: Data Storage Strategy
+- Option A: IndexedDB (frontend-only, fast start, free)
+- Option B: Backend server + DB (stable, $5-20/month)
+- Option C: Hybrid (start with IndexedDB, migrate later)
+
+**Question 2**: "Actual Weather" Ground Truth
+- Option A: Consensus (average of 3 providers, no extra API)
+- Option B: KMA (Korea Meteorological Administration API, official data)
+
+**Question 3**: City Coverage
+- Option A: 8 cities (Seoul, Busan, Incheon, Daegu, Daejeon, Gwangju, Ulsan, Jeju)
+- Option B: Seoul only (faster PoC, expand later)
+
+**Question 4**: AI Analysis Frequency
+- Option A: Monthly ($0.05/month, sufficient data)
+- Option B: Weekly ($0.20/month, more frequent updates)
+
+**Core Workflow**:
+```
+Day 0 (00:00): Collect tomorrow's forecast from all providers → IndexedDB
+Day 1 (00:00): Collect today's current weather from all providers → Compare with Day 0 forecast → Calculate accuracy
+Day 30: Run AI analysis (GPT-4o) → Generate provider rankings
+```
+
+**Reference Document**: `docs/WEATHER_ACCURACY_TRACKING_DESIGN.md`
+
 ---
 
 ## Quick Start for New Session
@@ -485,12 +526,18 @@ To continue this project in a new Claude session:
 6. Always distinguish technical constraints from UX recommendations
 7. Always use Perplexity AI for web research (primary requirement)
 
-**Current Status**: Phase 5 complete. All core features implemented. 85 tests passing. Ready for Phase 6 (E2E expansion) or new feature requests.
+**Current Status**: Phase 5 complete. All core features implemented. 85 tests passing. **Phase 6 (Weather Accuracy Tracking) in planning stage - awaiting user decisions on 4 key questions.**
 
 **Test Coverage**: 80%+ on core logic (Adapters, WeatherService), 50% overall (includes Vue components)
+
+**Pending User Decisions for Phase 6**:
+1. Data storage: IndexedDB vs Backend vs Hybrid
+2. Ground truth: Consensus vs KMA API
+3. City coverage: 8 cities vs Seoul only
+4. AI analysis frequency: Monthly vs Weekly
 
 ---
 
 *Document created: 2025-10-08*  
 *Last updated: 2025-10-09*  
-*Version: 2.0*
+*Version: 2.1*
