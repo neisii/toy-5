@@ -1,16 +1,16 @@
-import type { WeatherProvider } from '@/adapters/weather/WeatherProvider';
-import { createWeatherProvider } from '@/adapters/weather/WeatherProvider';
+import type { WeatherProvider } from "@/adapters/weather/WeatherProvider";
+import { createWeatherProvider } from "@/adapters/weather/WeatherProvider";
 import type {
   CurrentWeather,
   QuotaInfo,
   ProviderStatus,
-  WeatherProviderConfig
-} from '@/types/domain/weather';
+  WeatherProviderConfig,
+} from "@/types/domain/weather";
 
 /**
  * Provider type identifier
  */
-export type ProviderType = 'mock' | 'openweather' | 'weatherapi' | 'openmeteo';
+export type ProviderType = "mock" | "openweather" | "weatherapi" | "openmeteo";
 
 /**
  * Weather service configuration
@@ -18,47 +18,149 @@ export type ProviderType = 'mock' | 'openweather' | 'weatherapi' | 'openmeteo';
 export interface WeatherServiceConfig {
   defaultProvider: ProviderType;
   providers: Record<ProviderType, WeatherProviderConfig>;
+  cacheEnabled?: boolean;
+  cacheTTL?: number; // milliseconds
+}
+
+/**
+ * Cache entry for weather data
+ */
+interface CacheEntry {
+  data: CurrentWeather;
+  timestamp: number;
+  provider: ProviderType;
 }
 
 /**
  * Weather service
  *
  * This service manages weather providers and handles business logic
- * such as provider selection, quota management, and error handling.
+ * such as provider selection, quota management, error handling, and caching.
  */
 export class WeatherService {
   private currentProvider: WeatherProvider;
   private providerType: ProviderType;
   private config: WeatherServiceConfig;
+  private cache: Map<string, CacheEntry> = new Map();
+  private readonly CACHE_TTL: number;
 
   constructor(config: WeatherServiceConfig) {
     this.config = config;
     this.providerType = config.defaultProvider;
     this.currentProvider = this.createProvider(this.providerType);
+    this.CACHE_TTL = config.cacheTTL || 5 * 60 * 1000; // Default: 5분
   }
 
   /**
    * Get current weather for a city
+   *
+   * Caching strategy:
+   * - Cache key: `${provider}_${cityName}`
+   * - TTL: 5 minutes (configurable)
+   * - Cache invalidated on provider switch
    */
   async getCurrentWeather(cityName: string): Promise<CurrentWeather> {
     try {
+      // Check cache first (if enabled)
+      if (this.config.cacheEnabled !== false) {
+        const cachedData = this.getCachedWeather(cityName);
+        if (cachedData) {
+          console.log(`[WeatherService] Cache hit: ${cityName}`);
+          return cachedData;
+        }
+      }
+
       // Check quota before making request
       const quota = await this.currentProvider.checkQuota();
 
-      if (quota.status === 'exceeded') {
+      if (quota.status === "exceeded") {
         throw new Error(
           `Provider ${this.currentProvider.name} has exceeded its quota. ` +
-          `Resets at ${quota.resetTime.toLocaleString()}`
+            `Resets at ${quota.resetTime.toLocaleString()}`,
         );
       }
 
-      return await this.currentProvider.getCurrentWeather(cityName);
+      // Fetch from API
+      console.log(`[WeatherService] API call: ${cityName}`);
+      const weatherData =
+        await this.currentProvider.getCurrentWeather(cityName);
+
+      // Store in cache
+      if (this.config.cacheEnabled !== false) {
+        this.setCachedWeather(cityName, weatherData);
+      }
+
+      return weatherData;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to get weather: ${error.message}`);
       }
-      throw new Error('Failed to get weather: Unknown error');
+      throw new Error("Failed to get weather: Unknown error");
     }
+  }
+
+  /**
+   * Get cached weather data
+   */
+  private getCachedWeather(cityName: string): CurrentWeather | null {
+    const cacheKey = `${this.providerType}_${cityName}`;
+    const cached = this.cache.get(cacheKey);
+
+    if (!cached) {
+      return null;
+    }
+
+    // Check if cache is still valid
+    const now = Date.now();
+    if (now - cached.timestamp > this.CACHE_TTL) {
+      console.log(`[WeatherService] Cache expired: ${cityName}`);
+      this.cache.delete(cacheKey);
+      return null;
+    }
+
+    // Check if provider has changed
+    if (cached.provider !== this.providerType) {
+      console.log(
+        `[WeatherService] Cache invalidated (provider changed): ${cityName}`,
+      );
+      this.cache.delete(cacheKey);
+      return null;
+    }
+
+    return cached.data;
+  }
+
+  /**
+   * Store weather data in cache
+   */
+  private setCachedWeather(cityName: string, data: CurrentWeather): void {
+    const cacheKey = `${this.providerType}_${cityName}`;
+    this.cache.set(cacheKey, {
+      data,
+      timestamp: Date.now(),
+      provider: this.providerType,
+    });
+    console.log(
+      `[WeatherService] Cached: ${cityName} (TTL: ${this.CACHE_TTL}ms)`,
+    );
+  }
+
+  /**
+   * Clear all cached data
+   */
+  clearCache(): void {
+    this.cache.clear();
+    console.log("[WeatherService] Cache cleared");
+  }
+
+  /**
+   * Get cache statistics
+   */
+  getCacheStats(): { size: number; keys: string[] } {
+    return {
+      size: this.cache.size,
+      keys: Array.from(this.cache.keys()),
+    };
   }
 
   /**
@@ -78,7 +180,7 @@ export class WeatherService {
       name: this.currentProvider.name,
       isActive: true,
       quotaInfo: quota,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
   }
 
@@ -95,11 +197,14 @@ export class WeatherService {
       // Switch to new provider
       this.currentProvider = newProvider;
       this.providerType = providerType;
+
+      // Clear cache when switching providers
+      this.clearCache();
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to switch provider: ${error.message}`);
       }
-      throw new Error('Failed to switch provider: Unknown error');
+      throw new Error("Failed to switch provider: Unknown error");
     }
   }
 
@@ -139,7 +244,7 @@ export class WeatherService {
           name: provider.name,
           isActive: providerType === this.providerType,
           quotaInfo: quota,
-          lastUpdated: new Date()
+          lastUpdated: new Date(),
         });
       } catch (error) {
         statuses.push({
@@ -150,10 +255,10 @@ export class WeatherService {
             limit: 0,
             resetTime: new Date(),
             percentage: 0,
-            status: 'exceeded'
+            status: "exceeded",
           },
           lastUpdated: new Date(),
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : "Unknown error",
         });
       }
     }
@@ -192,28 +297,28 @@ export class WeatherService {
  */
 export function createDefaultConfig(): WeatherServiceConfig {
   return {
-    defaultProvider: 'mock',
+    defaultProvider: "mock",
     providers: {
       mock: {
-        name: 'Mock'
+        name: "Mock",
       },
       openweather: {
-        name: 'OpenWeatherMap',
-        apiKey: import.meta.env.VITE_OPENWEATHER_API_KEY || '',
-        baseUrl: 'https://api.openweathermap.org/data/2.5',
-        timeout: 10000
+        name: "OpenWeatherMap",
+        apiKey: import.meta.env.VITE_OPENWEATHER_API_KEY || "",
+        baseUrl: "https://api.openweathermap.org/data/2.5",
+        timeout: 10000,
       },
       weatherapi: {
-        name: 'WeatherAPI',
-        apiKey: import.meta.env.VITE_WEATHERAPI_API_KEY || '',
-        baseUrl: 'https://api.weatherapi.com/v1',
-        timeout: 10000
+        name: "WeatherAPI",
+        apiKey: import.meta.env.VITE_WEATHERAPI_API_KEY || "",
+        baseUrl: "https://api.weatherapi.com/v1",
+        timeout: 10000,
       },
       openmeteo: {
-        name: 'Open-Meteo',
-        baseUrl: 'https://api.open-meteo.com/v1',
-        timeout: 10000
-      }
-    }
+        name: "Open-Meteo",
+        baseUrl: "https://api.open-meteo.com/v1",
+        timeout: 10000,
+      },
+    },
   };
 }
