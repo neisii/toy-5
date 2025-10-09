@@ -13,7 +13,7 @@
 - Human makes all critical decisions
 - Progressive implementation with git tags per phase
 
-**Current Phase**: Completed Phase 1 (Inception), ready to begin Phase 2 (Construction)
+**Current Phase**: Completed Phase 5 (UX Improvements), ready for Phase 6 or new features
 
 ---
 
@@ -163,9 +163,9 @@
 
 ---
 
-## Phase 1 Completion Status
+## Completion Status by Phase
 
-### ✅ Completed
+### ✅ Phase 1 (Inception) - v0.1.0-refactor-phase1
 - [x] AI-DLC Inception phase questions (5 initial + 8 technical)
 - [x] All user decisions documented
 - [x] Mock data infrastructure complete (keyMap, JSON, types, loader)
@@ -173,14 +173,39 @@
 - [x] Weather icon mapping system
 - [x] API provider comparison research
 
-### ⏳ Ready for Phase 2
-- [ ] Create domain types (types/domain/weather.ts)
-- [ ] Create WeatherProvider interface
-- [ ] Implement OpenWeatherAdapter
-- [ ] Implement MockWeatherAdapter
-- [ ] Create WeatherService
-- [ ] Update Pinia store to use WeatherService
-- [ ] Update Playwright tests
+### ✅ Phase 2 (Domain Types) - v0.2.0-refactor-phase2
+- [x] Create domain types (types/domain/weather.ts)
+- [x] Create WeatherProvider interface
+- [x] Implement MockWeatherAdapter
+- [x] Implement OpenWeatherAdapter (initial)
+
+### ✅ Phase 3 (Multi-Provider) - v0.3.0-refactor-phase3
+- [x] Implement WeatherAPIAdapter
+- [x] Implement OpenMeteoAdapter
+- [x] Create WeatherService with provider switching
+- [x] Update Pinia store to use WeatherService
+- [x] Add ProviderSelector and QuotaStatus components
+- [x] Security: Husky pre-commit hooks for API key protection
+
+### ✅ Phase 4 (Testing Infrastructure) - v0.4.0-testing
+- [x] Install Vitest + happy-dom environment
+- [x] Create 67 unit tests (MockWeatherAdapter: 31, OpenMeteoAdapter: 18, WeatherAPIAdapter: 18)
+- [x] Fix E2E tests with Mock Provider strategy (5 tests)
+- [x] Total: 72 tests, 100% pass rate
+
+### ✅ Phase 5 (UX Improvements) - v0.5.0-ux
+- [x] Korean city name auto-conversion (서울 ↔ Seoul)
+- [x] Datalist autocomplete UI (8 cities)
+- [x] API response caching (5-minute TTL, provider-specific)
+- [x] Loading indicator (verified existing implementation)
+- [x] Add 13 new tests (9 caching + 4 Korean conversion)
+- [x] Total: 85 tests (80 unit + 5 E2E), 100% pass rate
+- [x] Core logic coverage: 80%+
+
+### 📋 Future Considerations
+- [ ] Phase 6: E2E test expansion (optional)
+- [ ] Responsive design (user excluded from Phase 5)
+- [ ] See `docs/FUTURE_FEATURES.md` for AI analysis features
 
 ---
 
@@ -307,78 +332,51 @@ weather-app/
 
 ---
 
-## Next Steps for Phase 2
+## Current Architecture (Completed)
 
-### 1. Domain Types (Priority: HIGH)
-**File**: `src/types/domain/weather.ts`
-
-**Required Interfaces**:
+### Domain Types (`src/types/domain/weather.ts`)
 ```typescript
 export interface CurrentWeather {
   location: LocationInfo;
-  temperature: number;
-  feelsLike: number;
-  humidity: number;
-  pressure: number;
-  windSpeed: number;
-  windDirection: number;
-  weather: WeatherCondition;
-  timestamp: Date;
-}
-
-export interface WeatherCondition {
-  main: string;
-  description: string;
-  icon: string;
+  current: CurrentConditions;
 }
 
 export interface LocationInfo {
   name: string;
   country: string;
-  coordinates: {
-    lat: number;
-    lon: number;
-  };
+  latitude: number;
+  longitude: number;
+  localtime: string;
+}
+
+export interface CurrentConditions {
+  temp_c: number;
+  condition: WeatherCondition;
+  wind_kph: number;
+  humidity: number;
+  feelslike_c: number;
 }
 ```
 
-### 2. WeatherProvider Interface (Priority: HIGH)
-**File**: `src/adapters/weather/WeatherProvider.ts`
+### WeatherProvider Interface (`src/adapters/weather/WeatherProvider.ts`)
+- **Implementations**: MockWeatherAdapter, OpenWeatherAdapter, WeatherAPIAdapter, OpenMeteoAdapter
+- **Methods**: getCurrentWeather(), checkQuota(), validateConfig()
+- **Quota Management**: LocalStorage-based tracking with UTC reset
 
-```typescript
-export interface WeatherProvider {
-  name: string;
-  getCurrentWeather(city: string): Promise<CurrentWeather>;
-  checkQuota(): Promise<QuotaInfo>;
-}
+### WeatherService (`src/services/weather/WeatherService.ts`)
+- Provider switching with automatic failover
+- API response caching (5-minute TTL)
+- Quota tracking and status reporting
+- Configuration validation
 
-export interface QuotaInfo {
-  used: number;
-  limit: number;
-  resetTime: Date;
-  percentage: number;
-  status: 'normal' | 'warning' | 'exceeded';
-}
-```
-
-### 3. Adapters (Priority: HIGH)
-- `src/adapters/weather/MockWeatherAdapter.ts` (implement first for testing)
-- `src/adapters/weather/OpenWeatherAdapter.ts`
-
-### 4. WeatherService (Priority: MEDIUM)
-**File**: `src/services/weather/WeatherService.ts`
-- Manages provider selection
-- Handles quota tracking
-- Business logic layer
-
-### 5. Update Existing Code (Priority: MEDIUM)
-- Update `src/stores/weather.ts` to use WeatherService
-- Update `tests/weather.spec.ts` for new architecture
-
-### 6. Documentation (Priority: LOW)
-- Create PHASE_2_SUMMARY.md after completion
-- Update PROGRESS.md
-- Git tag: `v0.1.0-refactor-phase2`
+### Features Implemented
+1. ✅ Multi-provider architecture (4 providers)
+2. ✅ Korean city name auto-conversion
+3. ✅ Datalist autocomplete UI
+4. ✅ API response caching
+5. ✅ Quota management with visual indicators
+6. ✅ Security: Husky pre-commit hooks
+7. ✅ Comprehensive testing (85 tests, 80%+ coverage)
 
 ---
 
@@ -433,23 +431,66 @@ For detailed information, refer to:
 
 ---
 
+## Recent Updates (Phase 4-5)
+
+### Phase 4: Testing Infrastructure (v0.4.0-testing)
+**Date**: 2025-10-09
+
+**Achievements**:
+- Installed Vitest 3.2.4 with happy-dom environment
+- Created 67 unit tests across 3 adapters
+- Fixed E2E tests using Mock Provider strategy
+- Resolved Vitest/Playwright test runner conflict
+- 100% test pass rate (72 total tests)
+
+**Git Commits**:
+1. `7ad1199` - Vitest setup and configuration
+2. `6f95bea` - MockWeatherAdapter tests (31)
+3. `71e9e47` - OpenMeteoAdapter tests (18)
+4. `f475387` - E2E test fixes (5)
+5. `ce5c9b5` - Phase 4 documentation
+
+### Phase 5: UX Improvements (v0.5.0-ux)
+**Date**: 2025-10-09
+
+**Achievements**:
+- Korean city name auto-conversion in WeatherAPIAdapter
+- Datalist autocomplete UI in SearchBar component
+- API response caching with 5-minute TTL and provider isolation
+- Added 13 new tests (9 caching + 4 Korean conversion)
+- Installed @vitest/coverage-v8 for coverage reporting
+- Updated GitHub Secret Protection documentation (2025 updates)
+- 100% test pass rate (85 total tests)
+
+**Git Commits**:
+1. `b10b84e` - Korean city name auto-conversion (Task 1)
+2. `cc8e0ae` - Datalist autocomplete UI (Task 2)
+3. `17b8679` - API response caching (Task 3)
+4. `2d60551` - Phase 5 documentation
+5. `a0ec6e1` - Context documentation updates
+
+**Key Learning**: Session context lost after Claude terms acceptance, but successfully recovered and completed all Phase 4-5 work.
+
+---
+
 ## Quick Start for New Session
 
 To continue this project in a new Claude session:
 
 1. Read this document completely
-2. Review `docs/REFACTORING_PLAN.md` for phase details
+2. Review phase summaries: `docs/PHASE_4_SUMMARY.md` and `docs/PHASE_5_SUMMARY.md`
 3. Check `docs/USER_DECISIONS.md` for all final decisions
-4. Start with Phase 2, Step 1: Create domain types
+4. Review recent git tags: `v0.4.0-testing` and `v0.5.0-ux`
 5. Follow the user's approval pattern (wait for "이행" before major changes)
 6. Always distinguish technical constraints from UX recommendations
+7. Always use Perplexity AI for web research (primary requirement)
 
-**Current Status**: Phase 1 complete, Mock data infrastructure ready, awaiting Phase 2 implementation.
+**Current Status**: Phase 5 complete. All core features implemented. 85 tests passing. Ready for Phase 6 (E2E expansion) or new feature requests.
 
-**Last User Message**: [Implied approval to proceed with Phase 2]
+**Test Coverage**: 80%+ on core logic (Adapters, WeatherService), 50% overall (includes Vue components)
 
 ---
 
 *Document created: 2025-10-08*  
-*Last updated: 2025-10-08*  
-*Version: 1.0*
+*Last updated: 2025-10-09*  
+*Version: 2.0*
