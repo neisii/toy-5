@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { CITY_COORDINATES } from '@/config/cityCoordinates';
 
 const emit = defineEmits<{
   search: [city: string];
 }>();
 
 const city = ref('');
+
+// 사용 가능한 도시 목록
+const availableCities = computed(() => {
+  return Object.values(CITY_COORDINATES);
+});
 
 function handleSubmit() {
   const trimmedCity = city.value.trim();
@@ -20,9 +26,19 @@ function handleSubmit() {
     <input
       v-model="city"
       type="text"
-      placeholder="도시 이름"
+      list="city-suggestions"
+      placeholder="도시 이름 (한글/영문)"
       class="search-input"
     />
+    <datalist id="city-suggestions">
+      <option
+        v-for="cityData in availableCities"
+        :key="cityData.name"
+        :value="cityData.name"
+      >
+        {{ cityData.name_en }}
+      </option>
+    </datalist>
     <button type="submit" class="search-button">검색</button>
   </form>
 </template>
