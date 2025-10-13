@@ -1,14 +1,17 @@
-name: Collect Weather Observations
+name: Collect Weather Predictions (02-weather-app)
 
-# Schedule: Daily at 00:30 UTC (09:30 KST) - 30 minutes after predictions
+# Schedule: Daily at 00:00 UTC (09:00 KST)
 on:
   schedule:
-    - cron: "30 0 * * *" # Daily 00:30 UTC
+    - cron: "0 0 * * *" # Daily midnight UTC
   workflow_dispatch: # Allow manual trigger for testing
 
 jobs:
-  collect-observations:
+  collect-predictions:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./02-weather-app
 
     steps:
       - name: Checkout repository
@@ -21,22 +24,23 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+          cache-dependency-path: ./02-weather-app/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Collect today's actual weather
+      - name: Collect tomorrow's weather predictions
         env:
           OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
           WEATHERAPI_KEY: ${{ secrets.WEATHERAPI_KEY }}
-        run: npx tsx --tsconfig tsconfig.app.json scripts/collect-observations.ts
+        run: npx tsx --tsconfig tsconfig.app.json scripts/collect-predictions.ts
 
-      - name: Commit observation data
+      - name: Commit prediction data
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/observations/*.json
-          git diff --staged --quiet || git commit -m "chore: collect weather observations for $(date -u +%Y-%m-%d)"
+          git add data/predictions/*.json
+          git diff --staged --quiet || git commit -m "chore: collect weather predictions for $(date -u +%Y-%m-%d)"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
