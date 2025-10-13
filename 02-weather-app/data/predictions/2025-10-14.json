@@ -1,0 +1,17 @@
+{
+  "date": "2025-10-13",
+  "collected_at": "2025-10-13T08:39:03.349Z",
+  "target_date": "2025-10-14",
+  "city": "서울",
+  "predictions": {
+    "openweather": {
+      "error": "Failed to switch provider: OpenWeatherMap API key is required",
+      "collected_at": "2025-10-13T08:39:03.349Z"
+    },
+    "weatherapi": {
+      "error": "Failed to switch provider: WeatherAPIAdapter requires API key in configuration",
+      "collected_at": "2025-10-13T08:39:03.349Z"
+    },
+    "openmeteo": null
+  }
+}

@@ -19,7 +19,13 @@ import type {
   WeatherProvider,
   CurrentWeather,
   QuotaInfo,
+  WeatherForecast,
 } from "./WeatherProvider";
+import type {
+  WeatherCondition,
+  TemperatureForecast,
+  LocationInfo,
+} from "@/types/domain/weather";
 import { wmoToStandard } from "../../types/domain/weatherIcon";
 import { CITY_COORDINATES } from "../../config/cityCoordinates";
 
@@ -54,6 +60,41 @@ interface OpenMeteoResponse {
   };
 }
 
+/**
+ * Open-Meteo Forecast API 응답 타입
+ */
+interface OpenMeteoForecastResponse {
+  latitude: number;
+  longitude: number;
+  generationtime_ms: number;
+  utc_offset_seconds: number;
+  timezone: string;
+  timezone_abbreviation: string;
+  elevation: number;
+  daily_units: {
+    time: string;
+    weather_code: string;
+    temperature_2m_max: string;
+    temperature_2m_min: string;
+    apparent_temperature_max: string;
+    apparent_temperature_min: string;
+    precipitation_sum: string;
+    precipitation_probability_max: string;
+    wind_speed_10m_max: string;
+  };
+  daily: {
+    time: string[];
+    weather_code: number[];
+    temperature_2m_max: number[];
+    temperature_2m_min: number[];
+    apparent_temperature_max: number[];
+    apparent_temperature_min: number[];
+    precipitation_sum: number[];
+    precipitation_probability_max: number[];
+    wind_speed_10m_max: number[];
+  };
+}
+
 const BASE_URL = "https://api.open-meteo.com/v1/forecast";
 
 /**
@@ -61,6 +102,71 @@ const BASE_URL = "https://api.open-meteo.com/v1/forecast";
  */
 export class OpenMeteoAdapter implements WeatherProvider {
   readonly name = "Open-Meteo";
+
+  /**
+   * Get weather forecast for a city (Phase 6: Accuracy Tracking)
+   */
+  async getForecast(
+    cityName: string,
+    days: number = 1,
+  ): Promise<WeatherForecast[]> {
+    // 1. 도시 이름 → 좌표 변환
+    const coordinates = this.getCityCoordinates(cityName);
+    if (!coordinates) {
+      throw new Error(
+        `Open-Meteo: 도시 "${cityName}"의 좌표 정보를 찾을 수 없습니다. ` +
+          `지원되는 도시 목록을 확인하세요.`,
+      );
+    }
+
+    try {
+      // 2. API 호출
+      const response = await axios.get<OpenMeteoForecastResponse>(BASE_URL, {
+        params: {
+          latitude: coordinates.lat,
+          longitude: coordinates.lon,
+          daily: [
+            "weather_code",
+            "temperature_2m_max",
+            "temperature_2m_min",
+            "apparent_temperature_max",
+            "apparent_temperature_min",
+            "precipitation_sum",
+            "precipitation_probability_max",
+            "wind_speed_10m_max",
+          ].join(","),
+          timezone: "auto",
+          forecast_days: days,
+        },
+      });
+
+      // 3. 응답 → 도메인 타입 변환
+      return this.transformForecastToDomain(
+        response.data,
+        cityName,
+        coordinates.country,
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const message = error.response?.data?.reason || error.message;
+
+        switch (status) {
+          case 400:
+            throw new Error(
+              `Open-Meteo 잘못된 요청: 좌표 정보가 잘못되었습니다. (${message})`,
+            );
+          case 429:
+            throw new Error(
+              `Open-Meteo Rate Limit 초과: 일일 10,000회 제한을 초과했습니다. (${message})`,
+            );
+          default:
+            throw new Error(`Open-Meteo 에러: ${message}`);
+        }
+      }
+      throw error;
+    }
+  }
 
   /**
    * 현재 날씨 조회
@@ -293,5 +399,79 @@ export class OpenMeteoAdapter implements WeatherProvider {
    */
   async validateConfig(): Promise<boolean> {
     return true;
+  }
+
+  /**
+   * Transform forecast response to domain types
+   */
+  private transformForecastToDomain(
+    data: OpenMeteoForecastResponse,
+    cityName: string,
+    country: string,
+  ): WeatherForecast[] {
+    const location: LocationInfo = {
+      name: cityName,
+      country: country,
+      coordinates: {
+        lat: data.latitude,
+        lon: data.longitude,
+      },
+      timezone: data.timezone,
+    };
+
+    const forecasts: WeatherForecast[] = [];
+
+    for (let i = 0; i < data.daily.time.length; i++) {
+      const timeValue = data.daily.time[i];
+      const weatherCode = data.daily.weather_code[i];
+      const tempMin = data.daily.temperature_2m_min[i];
+      const tempMax = data.daily.temperature_2m_max[i];
+      const windSpeed = data.daily.wind_speed_10m_max[i];
+      const precipProb = data.daily.precipitation_probability_max?.[i];
+
+      // Skip if required data is missing
+      if (
+        timeValue === undefined ||
+        weatherCode === undefined ||
+        tempMin === undefined ||
+        tempMax === undefined ||
+        windSpeed === undefined
+      ) {
+        continue;
+      }
+
+      const targetDate = new Date(timeValue);
+
+      // WMO code → OpenWeatherMap 표준 아이콘 (assume daytime for daily forecast)
+      const iconCode = wmoToStandard(weatherCode, true);
+      const description = this.getWeatherDescription(weatherCode);
+
+      const weather: WeatherCondition = {
+        main: description,
+        description: description,
+        descriptionKo: description,
+        icon: iconCode,
+      };
+
+      const temperature: TemperatureForecast = {
+        min: tempMin,
+        max: tempMax,
+        day: (tempMax + tempMin) / 2, // Average
+        night: tempMin, // Use min as night temp
+      };
+
+      forecasts.push({
+        location,
+        targetDate,
+        predictedAt: new Date(),
+        temperature,
+        weather,
+        humidity: 0, // Open-Meteo doesn't provide humidity in daily forecast
+        windSpeed: windSpeed / 3.6, // kph → m/s
+        precipitationProbability: precipProb || 0,
+      });
+    }
+
+    return forecasts;
   }
 }

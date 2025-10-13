@@ -5,6 +5,7 @@ import type {
   QuotaInfo,
   ProviderStatus,
   WeatherProviderConfig,
+  WeatherForecast,
 } from "@/types/domain/weather";
 
 /**
@@ -49,6 +50,46 @@ export class WeatherService {
     this.providerType = config.defaultProvider;
     this.currentProvider = this.createProvider(this.providerType);
     this.CACHE_TTL = config.cacheTTL || 5 * 60 * 1000; // Default: 5분
+  }
+
+  /**
+   * Get weather forecast for a city (Phase 6: Accuracy Tracking)
+   *
+   * @param cityName - City name (Korean or English)
+   * @param days - Number of days to forecast (default: 1)
+   * @returns Array of weather forecasts
+   */
+  async getForecast(
+    cityName: string,
+    days: number = 1,
+  ): Promise<WeatherForecast[]> {
+    try {
+      // Check quota before making request
+      const quota = await this.currentProvider.checkQuota();
+
+      if (quota.status === "exceeded") {
+        throw new Error(
+          `Provider ${this.currentProvider.name} has exceeded its quota. ` +
+            `Resets at ${quota.resetTime.toLocaleString()}`,
+        );
+      }
+
+      // Fetch forecast from API
+      console.log(
+        `[WeatherService] Forecast API call: ${cityName} (${days} days)`,
+      );
+      const forecastData = await this.currentProvider.getForecast(
+        cityName,
+        days,
+      );
+
+      return forecastData;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to get forecast: ${error.message}`);
+      }
+      throw new Error("Failed to get forecast: Unknown error");
+    }
   }
 
   /**
@@ -296,6 +337,14 @@ export class WeatherService {
  * Create default weather service configuration
  */
 export function createDefaultConfig(): WeatherServiceConfig {
+  // Support both browser (import.meta.env) and Node.js (process.env)
+  const getEnvVar = (key: string): string => {
+    if (typeof import.meta !== "undefined" && import.meta.env) {
+      return (import.meta.env as Record<string, string>)[key] || "";
+    }
+    return "";
+  };
+
   return {
     defaultProvider: "mock",
     providers: {
@@ -304,13 +353,13 @@ export function createDefaultConfig(): WeatherServiceConfig {
       },
       openweather: {
         name: "OpenWeatherMap",
-        apiKey: import.meta.env.VITE_OPENWEATHER_API_KEY || "",
+        apiKey: getEnvVar("VITE_OPENWEATHER_API_KEY"),
         baseUrl: "https://api.openweathermap.org/data/2.5",
         timeout: 10000,
       },
       weatherapi: {
         name: "WeatherAPI",
-        apiKey: import.meta.env.VITE_WEATHERAPI_API_KEY || "",
+        apiKey: getEnvVar("VITE_WEATHERAPI_API_KEY"),
         baseUrl: "https://api.weatherapi.com/v1",
         timeout: 10000,
       },

@@ -6,6 +6,8 @@ import type {
   CurrentWeatherData,
   WeatherCondition,
   LocationInfo,
+  WeatherForecast,
+  TemperatureForecast,
 } from "@/types/domain/weather";
 import { getCityCoordinate } from "@/config/cityCoordinates";
 
@@ -52,6 +54,44 @@ interface OpenWeatherResponse {
 }
 
 /**
+ * OpenWeatherMap 5 day / 3 hour Forecast API response
+ */
+interface OpenWeatherForecastResponse {
+  cod: string;
+  message: number;
+  cnt: number;
+  list: Array<{
+    dt: number;
+    main: {
+      temp: number;
+      feels_like: number;
+      temp_min: number;
+      temp_max: number;
+      pressure: number;
+      humidity: number;
+    };
+    weather: Array<{
+      id: number;
+      main: string;
+      description: string;
+      icon: string;
+    }>;
+    clouds: { all: number };
+    wind: { speed: number; deg: number };
+    visibility: number;
+    pop: number; // Probability of precipitation
+    dt_txt: string;
+  }>;
+  city: {
+    id: number;
+    name: string;
+    coord: { lat: number; lon: number };
+    country: string;
+    timezone: number;
+  };
+}
+
+/**
  * LocalStorage key for quota tracking
  */
 const QUOTA_STORAGE_KEY = "openweather_quota";
@@ -90,6 +130,77 @@ export class OpenWeatherAdapter implements WeatherProvider {
       throw new Error("OpenWeatherMap API key is required");
     }
     this.apiKey = config.apiKey;
+  }
+
+  /**
+   * Get weather forecast for a city (Phase 6: Accuracy Tracking)
+   *
+   * @param cityName - City name (Korean or English)
+   * @param days - Number of days to forecast (default: 1)
+   * @returns Array of weather forecasts
+   */
+  async getForecast(
+    cityName: string,
+    days: number = 1,
+  ): Promise<WeatherForecast[]> {
+    // Get coordinates for the city
+    const cityCoord = getCityCoordinate(cityName);
+    if (!cityCoord) {
+      throw new Error(`City coordinates not found: ${cityName}`);
+    }
+
+    // Check quota before making request
+    const quota = await this.checkQuota();
+    if (quota.status === "exceeded") {
+      throw new Error(
+        `API rate limit exceeded (60 calls/minute). ` +
+          `Wait ${Math.ceil((quota.resetTime.getTime() - Date.now()) / 1000)} seconds.`,
+      );
+    }
+
+    try {
+      // Make API request to forecast endpoint
+      const url = new URL(`${this.baseUrl}/forecast`);
+      url.searchParams.append("lat", cityCoord.lat.toString());
+      url.searchParams.append("lon", cityCoord.lon.toString());
+      url.searchParams.append("appid", this.apiKey);
+      url.searchParams.append("units", "metric");
+      url.searchParams.append("lang", "en");
+      url.searchParams.append("cnt", (days * 8).toString()); // 8 forecasts per day (3-hour intervals)
+
+      const response = await fetch(url.toString(), {
+        timeout: this.config.timeout || 10000,
+      } as RequestInit);
+
+      // Handle rate limit response
+      if (response.status === 429) {
+        this.incrementQuota();
+        throw new Error("API rate limit exceeded (HTTP 429)");
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      const data: OpenWeatherForecastResponse = await response.json();
+
+      // Increment quota counter
+      this.incrementQuota();
+
+      return this.transformForecastToDomain(
+        data,
+        cityCoord.name,
+        cityCoord.name_en,
+        days,
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Failed to fetch forecast data from OpenWeatherMap");
+    }
   }
 
   /**
@@ -384,5 +495,130 @@ export class OpenWeatherAdapter implements WeatherProvider {
   private resetDailyQuota(): void {
     const data = this.createNewQuotaData();
     localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
+  }
+
+  /**
+   * Transform forecast response to domain types
+   * Groups 3-hour forecasts into daily forecasts
+   */
+  private transformForecastToDomain(
+    data: OpenWeatherForecastResponse,
+    nameKo: string,
+    nameEn: string,
+    days: number,
+  ): WeatherForecast[] {
+    const location: LocationInfo = {
+      name: nameEn,
+      nameKo: nameKo,
+      country: data.city.country,
+      coordinates: {
+        lat: data.city.coord.lat,
+        lon: data.city.coord.lon,
+      },
+    };
+
+    // Group forecasts by date
+    const forecastsByDate = new Map<string, typeof data.list>();
+
+    for (const forecast of data.list) {
+      const date = new Date(forecast.dt * 1000);
+      const dateKey = date.toISOString().split("T")[0]; // YYYY-MM-DD
+
+      if (!dateKey) continue; // Skip if date parsing fails
+
+      if (!forecastsByDate.has(dateKey)) {
+        forecastsByDate.set(dateKey, []);
+      }
+      forecastsByDate.get(dateKey)!.push(forecast);
+    }
+
+    // Convert to daily forecasts (limit to requested days)
+    const dailyForecasts: WeatherForecast[] = [];
+    const dateKeys = Array.from(forecastsByDate.keys()).slice(0, days);
+
+    for (const dateKey of dateKeys) {
+      const dayForecasts = forecastsByDate.get(dateKey)!;
+
+      // Calculate daily aggregates
+      const temps = dayForecasts.map((f) => f.main.temp);
+      const minTemp = Math.min(...dayForecasts.map((f) => f.main.temp_min));
+      const maxTemp = Math.max(...dayForecasts.map((f) => f.main.temp_max));
+
+      // Average for day (06:00-18:00) and night (18:00-06:00)
+      const dayTemps = dayForecasts
+        .filter((f) => {
+          const hour = new Date(f.dt * 1000).getHours();
+          return hour >= 6 && hour < 18;
+        })
+        .map((f) => f.main.temp);
+
+      const nightTemps = dayForecasts
+        .filter((f) => {
+          const hour = new Date(f.dt * 1000).getHours();
+          return hour < 6 || hour >= 18;
+        })
+        .map((f) => f.main.temp);
+
+      const avgDayTemp = dayTemps.length
+        ? dayTemps.reduce((a, b) => a + b, 0) / dayTemps.length
+        : temps[0] || 0;
+      const avgNightTemp = nightTemps.length
+        ? nightTemps.reduce((a, b) => a + b, 0) / nightTemps.length
+        : temps[0] || 0;
+
+      // Use midday forecast for weather condition (12:00)
+      const middayForecast =
+        dayForecasts.find((f) => {
+          const hour = new Date(f.dt * 1000).getHours();
+          return hour === 12;
+        }) || dayForecasts[Math.floor(dayForecasts.length / 2)];
+
+      if (!middayForecast) {
+        throw new Error("No forecast data available for the day");
+      }
+
+      const weatherInfo = middayForecast.weather[0];
+      if (!weatherInfo) {
+        throw new Error("Weather information not available in forecast");
+      }
+
+      const weather: WeatherCondition = {
+        main: weatherInfo.main,
+        description: weatherInfo.description,
+        descriptionKo: this.translateDescription(weatherInfo.description),
+        icon: weatherInfo.icon,
+      };
+
+      // Average humidity and wind speed
+      const avgHumidity =
+        dayForecasts.reduce((sum, f) => sum + f.main.humidity, 0) /
+        dayForecasts.length;
+      const avgWindSpeed =
+        dayForecasts.reduce((sum, f) => sum + f.wind.speed, 0) /
+        dayForecasts.length;
+
+      // Max precipitation probability
+      const maxPrecipProb = Math.max(...dayForecasts.map((f) => f.pop)) * 100;
+
+      const temperature: TemperatureForecast = {
+        min: minTemp,
+        max: maxTemp,
+        day: avgDayTemp,
+        night: avgNightTemp,
+      };
+
+      dailyForecasts.push({
+        location,
+        targetDate: new Date(dateKey),
+        predictedAt: new Date(),
+        temperature,
+        weather,
+        humidity: Math.round(avgHumidity),
+        windSpeed: avgWindSpeed,
+        precipitationProbability: Math.round(maxPrecipProb),
+      });
+    }
+
+    return dailyForecasts;
   }
 }

@@ -1,5 +1,9 @@
 import type { WeatherProviderConfig } from "@/types/domain/weather";
-import type { CurrentWeather, QuotaInfo } from "@/types/domain/weather";
+import type {
+  CurrentWeather,
+  QuotaInfo,
+  WeatherForecast,
+} from "@/types/domain/weather";
 import { MockWeatherAdapter } from "./MockWeatherAdapter";
 import { OpenWeatherAdapter } from "./OpenWeatherAdapter";
 import { WeatherAPIAdapter } from "./WeatherAPIAdapter";
@@ -8,7 +12,7 @@ import { OpenMeteoAdapter } from "./OpenMeteoAdapter";
 /**
  * Re-export types for use in adapters
  */
-export type { CurrentWeather, QuotaInfo };
+export type { CurrentWeather, QuotaInfo, WeatherForecast };
 
 /**
  * Weather provider interface
@@ -30,6 +34,16 @@ export interface WeatherProvider {
    * @throws Error if the city is not found or API request fails
    */
   getCurrentWeather(cityName: string): Promise<CurrentWeather>;
+
+  /**
+   * Get weather forecast for a city (Phase 6: Accuracy Tracking)
+   *
+   * @param cityName - Name of the city (Korean or English)
+   * @param days - Number of days to forecast (default: 1, for tomorrow's weather)
+   * @returns Promise resolving to weather forecast data in domain format
+   * @throws Error if the city is not found or API request fails
+   */
+  getForecast(cityName: string, days?: number): Promise<WeatherForecast[]>;
 
   /**
    * Check current API quota status

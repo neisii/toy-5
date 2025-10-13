@@ -19,7 +19,13 @@ import type {
   WeatherProvider,
   CurrentWeather,
   QuotaInfo,
+  WeatherForecast,
 } from "./WeatherProvider";
+import type {
+  WeatherCondition,
+  TemperatureForecast,
+  LocationInfo,
+} from "@/types/domain/weather";
 import { weatherApiToStandard } from "../../types/domain/weatherIcon";
 import { getCityCoordinate } from "@/config/cityCoordinates";
 
@@ -69,6 +75,53 @@ interface WeatherAPIResponse {
 }
 
 /**
+ * WeatherAPI.com Forecast API 응답 타입
+ */
+interface WeatherAPIForecastResponse {
+  location: {
+    name: string;
+    region: string;
+    country: string;
+    lat: number;
+    lon: number;
+    tz_id: string;
+    localtime_epoch: number;
+    localtime: string;
+  };
+  forecast: {
+    forecastday: Array<{
+      date: string; // YYYY-MM-DD
+      date_epoch: number;
+      day: {
+        maxtemp_c: number;
+        maxtemp_f: number;
+        mintemp_c: number;
+        mintemp_f: number;
+        avgtemp_c: number;
+        avgtemp_f: number;
+        maxwind_mph: number;
+        maxwind_kph: number;
+        totalprecip_mm: number;
+        totalprecip_in: number;
+        avgvis_km: number;
+        avgvis_miles: number;
+        avghumidity: number;
+        daily_will_it_rain: number; // 0 or 1
+        daily_chance_of_rain: number; // 0-100
+        daily_will_it_snow: number; // 0 or 1
+        daily_chance_of_snow: number; // 0-100
+        condition: {
+          text: string;
+          icon: string;
+          code: number;
+        };
+        uv: number;
+      };
+    }>;
+  };
+}
+
+/**
  * Quota 데이터 구조
  */
 interface WeatherAPIQuotaData {
@@ -96,6 +149,65 @@ export class WeatherAPIAdapter implements WeatherProvider {
   }
 
   /**
+   * Get weather forecast for a city (Phase 6: Accuracy Tracking)
+   */
+  async getForecast(
+    cityName: string,
+    days: number = 1,
+  ): Promise<WeatherForecast[]> {
+    try {
+      // 한글 → 영문 자동 변환
+      const cityData = getCityCoordinate(cityName);
+      const queryCity = cityData?.name_en || cityName;
+
+      const response = await axios.get<WeatherAPIForecastResponse>(
+        `${BASE_URL}/forecast.json`,
+        {
+          params: {
+            key: this.apiKey,
+            q: queryCity,
+            days: days,
+            aqi: "no",
+          },
+        },
+      );
+
+      // Quota 증가
+      this.incrementQuota();
+
+      // 응답 → 도메인 타입 변환
+      return this.transformForecastToDomain(response.data, cityData);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const message = error.response?.data?.error?.message || error.message;
+
+        switch (status) {
+          case 401:
+            throw new Error(
+              `WeatherAPI.com 인증 실패: API 키가 유효하지 않습니다. (${message})`,
+            );
+          case 403:
+            throw new Error(
+              `WeatherAPI.com 접근 거부: API 키 권한이 없습니다. (${message})`,
+            );
+          case 400:
+            throw new Error(
+              `WeatherAPI.com 잘못된 요청: 도시 이름을 확인하세요. (${message})`,
+            );
+          case 429:
+            throw new Error(
+              `WeatherAPI.com Rate Limit 초과: 월간 호출 제한을 초과했습니다. (${message})`,
+            );
+          default:
+            throw new Error(`WeatherAPI.com 에러: ${message}`);
+        }
+      }
+      throw error;
+    }
+  }
+
+  /**
    * 현재 날씨 조회
    *
    * 한글 도시명 자동 변환:
@@ -107,7 +219,6 @@ export class WeatherAPIAdapter implements WeatherProvider {
       // 한글 → 영문 자동 변환
       const cityData = getCityCoordinate(city);
       const queryCity = cityData?.name_en || city;
-      const originalCityName = city; // 원본 도시명 보존
 
       const response = await axios.get<WeatherAPIResponse>(
         `${BASE_URL}/current.json`,
@@ -292,5 +403,60 @@ export class WeatherAPIAdapter implements WeatherProvider {
       throw new Error("WeatherAPI.com API 키가 설정되지 않았습니다.");
     }
     return true;
+  }
+
+  /**
+   * Transform forecast response to domain types
+   */
+  private transformForecastToDomain(
+    data: WeatherAPIForecastResponse,
+    cityData: ReturnType<typeof getCityCoordinate> | null,
+  ): WeatherForecast[] {
+    const location: LocationInfo = {
+      name: cityData?.name || data.location.name,
+      nameKo: cityData?.name,
+      country: data.location.country,
+      coordinates: {
+        lat: data.location.lat,
+        lon: data.location.lon,
+      },
+      timezone: data.location.tz_id,
+    };
+
+    return data.forecast.forecastday.map((day) => {
+      // WeatherAPI condition code → OpenWeatherMap 표준 아이콘
+      const iconCode = weatherApiToStandard(day.day.condition.code, 1); // day = 1
+
+      const weather: WeatherCondition = {
+        main: day.day.condition.text,
+        description: day.day.condition.text,
+        descriptionKo: day.day.condition.text, // WeatherAPI doesn't provide Korean
+        icon: iconCode,
+      };
+
+      const temperature: TemperatureForecast = {
+        min: day.day.mintemp_c,
+        max: day.day.maxtemp_c,
+        day: day.day.avgtemp_c,
+        night: day.day.avgtemp_c, // WeatherAPI doesn't separate day/night avg
+      };
+
+      // Precipitation probability (rain or snow)
+      const precipProb = Math.max(
+        day.day.daily_chance_of_rain,
+        day.day.daily_chance_of_snow,
+      );
+
+      return {
+        location,
+        targetDate: new Date(day.date),
+        predictedAt: new Date(),
+        temperature,
+        weather,
+        humidity: day.day.avghumidity,
+        windSpeed: day.day.maxwind_kph / 3.6, // kph → m/s
+        precipitationProbability: precipProb,
+      };
+    });
   }
 }

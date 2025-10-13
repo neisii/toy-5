@@ -6,6 +6,8 @@ import type {
   CurrentWeatherData,
   WeatherCondition,
   LocationInfo,
+  WeatherForecast,
+  TemperatureForecast,
 } from "@/types/domain/weather";
 import { loadMockWeatherData, getMockWeatherByCity } from "@/data/loader";
 import type { CityWeather } from "@/data/types";
@@ -21,6 +23,74 @@ export class MockWeatherAdapter implements WeatherProvider {
 
   constructor(_config?: WeatherProviderConfig) {
     // Mock provider doesn't need configuration
+  }
+
+  /**
+   * Get weather forecast for a city (Phase 6: Mock data)
+   *
+   * Mock provider returns simulated forecast data based on current weather
+   */
+  async getForecast(
+    cityName: string,
+    days: number = 1,
+  ): Promise<WeatherForecast[]> {
+    const cityWeather = await getMockWeatherByCity(cityName);
+
+    if (!cityWeather) {
+      throw new Error(`City not found in mock data: ${cityName}`);
+    }
+
+    // Generate mock forecast based on current weather
+    const forecasts: WeatherForecast[] = [];
+    const baseTemp = cityWeather.current.temperature;
+
+    for (let i = 0; i < days; i++) {
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + i + 1); // Tomorrow onwards
+
+      // Simulate temperature variation
+      const tempVariation = (Math.random() - 0.5) * 4; // ±2°C
+      const dayTemp = baseTemp + tempVariation;
+      const nightTemp = dayTemp - 5;
+
+      const location: LocationInfo = {
+        name: cityWeather.location.name_en || cityWeather.location.name,
+        nameKo: cityWeather.location.name_ko,
+        country: cityWeather.location.country,
+        coordinates: {
+          lat: cityWeather.location.latitude,
+          lon: cityWeather.location.longitude,
+        },
+        timezone: cityWeather.location.timezone,
+      };
+
+      const weather: WeatherCondition = {
+        main: this.getMainCondition(cityWeather.weather.icon),
+        description: cityWeather.weather.description_en,
+        descriptionKo: cityWeather.weather.description,
+        icon: cityWeather.weather.icon,
+      };
+
+      const temperature: TemperatureForecast = {
+        min: nightTemp,
+        max: dayTemp,
+        day: dayTemp,
+        night: nightTemp,
+      };
+
+      forecasts.push({
+        location,
+        targetDate,
+        predictedAt: new Date(),
+        temperature,
+        weather,
+        humidity: cityWeather.current.humidity,
+        windSpeed: cityWeather.current.windSpeed,
+        precipitationProbability: 0, // Mock: no precipitation
+      });
+    }
+
+    return forecasts;
   }
 
   /**

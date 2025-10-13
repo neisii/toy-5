@@ -576,21 +576,35 @@ To continue this project in a new Claude session:
 3. ✅ City coverage: Seoul only (PoC, expand later)
 4. ✅ AI analysis: Weekly ($0.20/month for 4 weeks)
 
-**Pending Decisions**:
-1. ⏳ TalkPython Weather API: Add to Phase 5 (current weather only) or skip?
-   - Pros: Provider diversity, educational fit
-   - Cons: "Educational use only" restriction, no Forecast API
-   - Recommended: Conditional addition (Phase 5 only, exclude from Phase 6)
+**Repository Structure Decision** (2025-10-10):
+- **Decision**: 4안 (Hybrid Approach) ⭐⭐⭐⭐⭐
+- **Phase 6 PoC (Week 1-4)**:
+  - Keep current structure (02-weather-app/)
+  - Add .github/workflows/ to 02-weather-app
+  - Store data temporarily in 02-weather-app/data/
+- **After Validation (Week 5+)**:
+  - If successful → separate to weather-data repo
+  - If not needed → keep current structure
+- **Rationale**: 
+  - Zero migration cost during PoC
+  - Flexible future separation
+  - Project size is reasonable (5,600 LOC)
+  - Documentation size (13,400 lines) is due to AI-DLC methodology (expected)
+
+**Confirmed Decisions**:
+1. ✅ TalkPython API: Skip (no Forecast API, Phase 6 incompatible)
+2. ✅ Repository structure: 4안 (Hybrid approach)
 
 **Next Steps**:
-1. Decide on TalkPython API addition
-2. Start Phase 6 Week 1: Forecast API integration
-3. Setup GitHub Actions workflows
+1. Create GitHub Actions workflow structure
+2. Extend WeatherProvider interface with getForecast() method
+3. Implement Forecast API integration for all providers
 
-**Recent Commits** (2025-10-09):
+**Recent Commits** (2025-10-09 ~ 2025-10-10):
 - `6ce1934`: Phase 6 design document
 - `69f4d6f`: SESSION_CONTEXT update (Phase 4-5 completion)
 - `13097b9`: Phase 6 plan + macOS sleep analysis
+- `e42297b`: SESSION_CONTEXT v2.2 + TalkPython API analysis
 
 **Key Documents**:
 - `docs/PHASE_6_PLAN.md`: Week-by-week implementation plan
