@@ -3,6 +3,12 @@
     <div class="dashboard-header">
       <h1>날씨 예보 정확도 추적</h1>
       <p class="subtitle">30일간의 예측 데이터를 실제 관측 데이터와 비교합니다</p>
+      <button v-if="!demoMode && comparisons.length === 0" @click="enableDemoMode" class="demo-button">
+        📊 데모 데이터로 미리보기
+      </button>
+      <button v-if="demoMode" @click="disableDemoMode" class="demo-button active">
+        ✅ 데모 모드 (2주 샘플 데이터)
+      </button>
     </div>
 
     <!-- Loading State -->
@@ -107,11 +113,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useAccuracyData } from '@/composables/useAccuracyData';
 import ProviderComparison from './ProviderComparison.vue';
 import AccuracyChart from './AccuracyChart.vue';
 import DailyAccuracyTable from './DailyAccuracyTable.vue';
+
+const demoMode = ref(false);
 
 const {
   loading,
@@ -121,6 +129,8 @@ const {
   bestProvider,
   loadPredictions,
   loadObservations,
+  loadDemoData,
+  clearData,
 } = useAccuracyData();
 
 // Computed statistics
@@ -135,6 +145,17 @@ const avgConditionMatch = computed(() => {
   const matches = comparisons.value.filter(c => c.conditionMatch).length;
   return (matches / comparisons.value.length) * 100;
 });
+
+// Demo mode functions
+function enableDemoMode() {
+  demoMode.value = true;
+  loadDemoData();
+}
+
+function disableDemoMode() {
+  demoMode.value = false;
+  clearData();
+}
 
 // Load data on mount
 onMounted(async () => {
@@ -165,6 +186,29 @@ onMounted(async () => {
 .subtitle {
   color: #718096;
   font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.demo-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.demo-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.demo-button.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 /* Loading State */

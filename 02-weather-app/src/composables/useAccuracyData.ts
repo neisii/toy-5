@@ -5,6 +5,10 @@
  */
 
 import { ref, computed } from "vue";
+import {
+  generateDemoPredictions,
+  generateDemoObservations,
+} from "@/data/demoAccuracyData";
 
 /**
  * Prediction data structure
@@ -252,6 +256,28 @@ export function useAccuracyData() {
     return best;
   });
 
+  /**
+   * Load demo data for UI preview
+   */
+  function loadDemoData() {
+    predictions.value = generateDemoPredictions();
+    observations.value = generateDemoObservations();
+    console.log(
+      "[useAccuracyData] Demo data loaded:",
+      predictions.value.length,
+      "predictions",
+    );
+  }
+
+  /**
+   * Clear all data
+   */
+  function clearData() {
+    predictions.value = [];
+    observations.value = [];
+    console.log("[useAccuracyData] Data cleared");
+  }
+
   return {
     predictions,
     observations,
@@ -259,6 +285,8 @@ export function useAccuracyData() {
     error,
     loadPredictions,
     loadObservations,
+    loadDemoData,
+    clearData,
     comparisons,
     providerStats,
     bestProvider,
