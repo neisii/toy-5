@@ -100,8 +100,16 @@ async function collectPredictions() {
       // Switch to provider
       await weatherService.switchProvider(provider);
 
-      // Get forecast (1 day = tomorrow)
-      const forecasts = await weatherService.getForecast(city, 1);
+      // Get forecast (days parameter varies by provider)
+      // OpenWeather/WeatherAPI: days=1 means first N days from now
+      // We request more days to ensure we get tomorrow's data
+      const forecasts = await weatherService.getForecast(city, 3);
+
+      // Debug: Log all forecast dates
+      console.log(
+        `  📅 Received ${forecasts.length} forecasts:`,
+        forecasts.map((f) => formatDate(new Date(f.targetDate))).join(", "),
+      );
 
       // Extract tomorrow's forecast
       const tomorrowForecast = extractForecastForDate(forecasts, tomorrow);

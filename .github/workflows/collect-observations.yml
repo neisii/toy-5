@@ -39,10 +39,11 @@ jobs:
         run: npx tsx --tsconfig tsconfig.app.json scripts/collect-observations.ts
 
       - name: Commit observation data
+        working-directory: .
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/observations/*.json
+          git add 02-weather-app/data/observations/*.json
           git diff --staged --quiet || git commit -m "chore: collect weather observations for $(date -u +%Y-%m-%d)"
 
       - name: Push changes
