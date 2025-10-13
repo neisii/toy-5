@@ -6,6 +6,9 @@ on:
     - cron: "30 0 * * *" # Daily 00:30 UTC
   workflow_dispatch: # Allow manual trigger for testing
 
+permissions:
+  contents: write
+
 jobs:
   collect-observations:
     runs-on: ubuntu-latest

@@ -6,6 +6,9 @@ on:
     - cron: "0 0 * * *" # Daily midnight UTC
   workflow_dispatch: # Allow manual trigger for testing
 
+permissions:
+  contents: write
+
 jobs:
   collect-predictions:
     runs-on: ubuntu-latest

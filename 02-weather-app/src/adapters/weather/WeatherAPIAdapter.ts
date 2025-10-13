@@ -28,6 +28,7 @@ import type {
 } from "@/types/domain/weather";
 import { weatherApiToStandard } from "../../types/domain/weatherIcon";
 import { getCityCoordinate } from "@/config/cityCoordinates";
+import { getStorageItem, setStorageItem } from "./storage";
 
 /**
  * WeatherAPI.com API 응답 타입
@@ -287,7 +288,7 @@ export class WeatherAPIAdapter implements WeatherProvider {
       // 새로운 달 → 리셋
       quotaData.callsThisMonth = 0;
       quotaData.lastResetDate = currentMonth;
-      localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(quotaData));
+      setStorageItem(QUOTA_STORAGE_KEY, JSON.stringify(quotaData));
     }
 
     // 사용률 계산
@@ -367,7 +368,7 @@ export class WeatherAPIAdapter implements WeatherProvider {
    * localStorage에서 Quota 데이터 가져오기
    */
   private getQuotaData(): WeatherAPIQuotaData {
-    const stored = localStorage.getItem(QUOTA_STORAGE_KEY);
+    const stored = getStorageItem(QUOTA_STORAGE_KEY);
     if (stored) {
       return JSON.parse(stored);
     }
@@ -382,7 +383,7 @@ export class WeatherAPIAdapter implements WeatherProvider {
       lastResetDate: currentMonth,
     };
 
-    localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(defaultData));
+    setStorageItem(QUOTA_STORAGE_KEY, JSON.stringify(defaultData));
     return defaultData;
   }
 
@@ -392,7 +393,7 @@ export class WeatherAPIAdapter implements WeatherProvider {
   private incrementQuota(): void {
     const data = this.getQuotaData();
     data.callsThisMonth += 1;
-    localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
+    setStorageItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
   }
 
   /**

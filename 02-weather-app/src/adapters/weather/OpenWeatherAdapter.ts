@@ -10,6 +10,7 @@ import type {
   TemperatureForecast,
 } from "@/types/domain/weather";
 import { getCityCoordinate } from "@/config/cityCoordinates";
+import { getStorageItem, setStorageItem } from "./storage";
 
 /**
  * OpenWeatherMap API response type (Current Weather API 2.5)
@@ -278,7 +279,7 @@ export class OpenWeatherAdapter implements WeatherProvider {
     quotaData.callsThisMinute = recentCalls;
 
     // Save cleaned data
-    localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(quotaData));
+    setStorageItem(QUOTA_STORAGE_KEY, JSON.stringify(quotaData));
 
     // Check daily reset
     const dailyResetTime = new Date(quotaData.resetTime);
@@ -430,7 +431,7 @@ export class OpenWeatherAdapter implements WeatherProvider {
    * Get quota data from LocalStorage
    */
   private getQuotaData(): QuotaData {
-    const stored = localStorage.getItem(QUOTA_STORAGE_KEY);
+    const stored = getStorageItem(QUOTA_STORAGE_KEY);
 
     if (!stored) {
       return this.createNewQuotaData();
@@ -468,7 +469,7 @@ export class OpenWeatherAdapter implements WeatherProvider {
       resetTime: tomorrow.toISOString(),
     };
 
-    localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
+    setStorageItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
     return data;
   }
 
@@ -486,7 +487,7 @@ export class OpenWeatherAdapter implements WeatherProvider {
     // Increment daily counter
     data.dailyUsed += 1;
 
-    localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
+    setStorageItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
   }
 
   /**
@@ -494,7 +495,7 @@ export class OpenWeatherAdapter implements WeatherProvider {
    */
   private resetDailyQuota(): void {
     const data = this.createNewQuotaData();
-    localStorage.setItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
+    setStorageItem(QUOTA_STORAGE_KEY, JSON.stringify(data));
   }
 
   /**

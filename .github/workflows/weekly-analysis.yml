@@ -6,6 +6,9 @@ on:
     - cron: "0 1 * * 1" # Weekly on Monday 01:00 UTC
   workflow_dispatch: # Allow manual trigger for testing
 
+permissions:
+  contents: write
+
 jobs:
   analyze-accuracy:
     runs-on: ubuntu-latest
