@@ -87,6 +87,16 @@
 - **Features**: AI weather analysis, provider accuracy ranking, pattern prediction
 - **Decision**: "AI 날씨 분석은 아직 생각만 한 기능이니 당장 리팩토링 일정에선 제외하고 별도 문서로 만들어두자"
 
+### 9. Commit Convention (2025-10-14)
+- **Decision**: Conventional Commits with Scope (방안 1)
+- **Format**: `<type>(<scope>): <subject>`
+- **Scopes**: `todo-app`, `weather-app`, `shopping-mall`, `auth-form`, `chat-app`, `root`, `docs`
+- **Rationale**: 
+  - 학습이 주 목적이므로 간단한 방법 선택
+  - Commitizen/Commitlint는 협업 시작 또는 자동화 필요 시 도입
+  - 현재는 수동으로 작성하되 일관된 형식 유지
+- **Reference**: `docs/COMMIT_CONVENTION.md`
+
 ---
 
 ## Critical User Feedback Patterns
