@@ -14,9 +14,14 @@
     try {
       loginSchema.parse({ email, password });
     } catch (err) {
-      err.errors.forEach(error => {
-        errors[error.path[0]] = error.message;
-      });
+      // Zod validation error uses 'issues' not 'errors'
+      if (err.issues) {
+        err.issues.forEach(issue => {
+          errors[issue.path[0]] = issue.message;
+        });
+      } else {
+        errors.general = '검증 오류가 발생했습니다';
+      }
       return;
     }
 
