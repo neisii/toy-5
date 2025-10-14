@@ -47,13 +47,13 @@
 5. **Total Price Calculation**: Real-time cart total update
 6. **LocalStorage Persistence**: Cart data saved to localStorage
 7. **Empty State**: Display message when cart is empty
+8. **Pagination** (Phase 1 - 2025-10-14): Page navigation with URL sync, previous/next buttons
+9. **URL Parameters**: Page state reflected in URL (?page=2)
 
 ### Not Implemented
-1. **Pagination**: Page navigation for product list
-2. **Search**: Product name search with debounce
-3. **Toast Notifications**: Alert on cart actions
-4. **Product Detail Page**: Individual product view
-5. **URL Parameters**: Reflect filter/page state in URL
+1. **Search**: Product name search with debounce
+2. **Toast Notifications**: Alert on cart actions
+3. **Product Detail Page**: Individual product view
 
 ---
 
@@ -73,8 +73,8 @@
 │   │   ├── ProductCard.tsx
 │   │   ├── ProductList.tsx
 │   │   ├── CategoryFilter.tsx
+│   │   ├── Pagination.tsx
 │   │   ├── SearchBar.tsx         # Not implemented
-│   │   ├── Pagination.tsx        # Not implemented
 │   │   ├── CartItem.tsx
 │   │   └── CartSummary.tsx
 │   ├── store/
@@ -171,14 +171,16 @@ interface Cart {
 1. E2E cart scenario (add → view → update quantity → delete)
 2. Category filtering
 3. Quantity control in cart
+4. **Pagination navigation** (Phase 1 - 2025-10-14): Page movement, previous/next buttons
+5. **Category change resets to page 1** (Phase 1 - 2025-10-14)
 
 ### Missing Tests
-1. Pagination navigation
-2. Search functionality
-3. Product detail page
-4. URL parameter validation
+1. Search functionality
+2. Product detail page
 
-**Test Files**: `tests/shop.spec.ts`, `tests/cart.spec.ts`
+**Test Files**: `tests/shop.spec.ts`
+
+**Total Tests**: 6 (all passing)
 
 ---
 
