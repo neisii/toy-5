@@ -168,6 +168,181 @@ test.describe("쇼핑몰 기본 기능", () => {
   });
 });
 
+test.describe("검색 기능", () => {
+  test("검색어 입력 시 필터링", async ({ page }) => {
+    await page.route("**/localhost:3001/products", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          {
+            id: 1,
+            name: "노트북",
+            price: 1000000,
+            category: "electronics",
+            description: "노트북 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 10,
+          },
+          {
+            id: 2,
+            name: "키보드",
+            price: 50000,
+            category: "electronics",
+            description: "키보드 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 20,
+          },
+          {
+            id: 3,
+            name: "티셔츠",
+            price: 20000,
+            category: "fashion",
+            description: "티셔츠 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 30,
+          },
+        ]),
+      });
+    });
+
+    await page.goto("/");
+    await expect(page.locator(".product-card")).toHaveCount(3);
+
+    // "노트" 검색
+    await page.fill('input[placeholder*="검색"]', "노트");
+
+    // "노트북"만 표시
+    await expect(page.locator(".product-card")).toHaveCount(1);
+    await expect(page.locator('[data-id="1"]')).toBeVisible();
+    await expect(page.locator('[data-id="2"]')).not.toBeVisible();
+  });
+
+  test("카테고리와 검색 조합", async ({ page }) => {
+    await page.route("**/localhost:3001/products", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          {
+            id: 1,
+            name: "노트북",
+            price: 1000000,
+            category: "electronics",
+            description: "노트북 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 10,
+          },
+          {
+            id: 2,
+            name: "키보드",
+            price: 50000,
+            category: "electronics",
+            description: "키보드 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 20,
+          },
+          {
+            id: 3,
+            name: "노트",
+            price: 2000,
+            category: "furniture",
+            description: "노트 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 50,
+          },
+        ]),
+      });
+    });
+
+    await page.goto("/");
+    await expect(page.locator(".product-card")).toHaveCount(3);
+
+    // "전자제품" 카테고리 선택
+    await page.click('button:has-text("전자제품")');
+    await expect(page.locator(".product-card")).toHaveCount(2);
+
+    // "노트" 검색
+    await page.fill('input[placeholder*="검색"]', "노트");
+
+    // "노트북"만 표시 (전자제품 카테고리의 "노트" 포함 상품)
+    await expect(page.locator(".product-card")).toHaveCount(1);
+    await expect(page.locator('[data-id="1"]')).toBeVisible();
+  });
+
+  test("검색 결과 없을 시 메시지 표시", async ({ page }) => {
+    await page.route("**/localhost:3001/products", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          {
+            id: 1,
+            name: "노트북",
+            price: 1000000,
+            category: "electronics",
+            description: "노트북 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 10,
+          },
+          {
+            id: 2,
+            name: "키보드",
+            price: 50000,
+            category: "electronics",
+            description: "키보드 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 20,
+          },
+        ]),
+      });
+    });
+
+    await page.goto("/");
+    await expect(page.locator(".product-card")).toHaveCount(2);
+
+    // 존재하지 않는 상품 검색
+    await page.fill('input[placeholder*="검색"]', "존재하지않는상품");
+
+    // 결과 없음 메시지 표시
+    await expect(page.locator(".product-card")).toHaveCount(0);
+    await expect(page.locator("text=검색 결과가 없습니다")).toBeVisible();
+  });
+
+  test("검색 후 페이지네이션 동작", async ({ page }) => {
+    // 25개 상품 생성, 짝수 인덱스만 "전자" 포함 (13개)
+    const products = generateMockProducts(25);
+    products.forEach((product, index) => {
+      if (index % 2 === 0) {
+        product.name = `전자제품 ${index + 1}`;
+      }
+    });
+
+    await page.route("**/localhost:3001/products", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(products),
+      });
+    });
+
+    await page.goto("/");
+    await expect(page.locator(".product-card")).toHaveCount(12);
+
+    // "전자" 검색
+    await page.fill('input[placeholder*="검색"]', "전자");
+
+    // 1페이지에 12개 표시
+    await expect(page.locator(".product-card")).toHaveCount(12);
+
+    // 2페이지로 이동
+    await page.click('button:has-text("2")');
+
+    // 2페이지에 1개 표시 (총 13개 중)
+    await expect(page.locator(".product-card")).toHaveCount(1);
+  });
+});
+
 test.describe("페이지네이션", () => {
   test("페이지 이동", async ({ page }) => {
     // 25개 상품으로 모킹 (12개씩 3페이지)
