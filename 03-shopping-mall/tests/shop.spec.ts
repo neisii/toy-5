@@ -343,6 +343,143 @@ test.describe("검색 기능", () => {
   });
 });
 
+test.describe("Toast 알림", () => {
+  test("장바구니 추가 시 Toast 표시", async ({ page }) => {
+    await page.route("**/localhost:3001/products", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          {
+            id: 1,
+            name: "노트북",
+            price: 1000000,
+            category: "electronics",
+            description: "노트북 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 10,
+          },
+        ]),
+      });
+    });
+
+    await page.goto("/");
+    await page.waitForSelector(".product-card");
+
+    // "장바구니 담기" 버튼 클릭
+    await page.click('button:has-text("장바구니 담기")');
+
+    // Toast 표시 확인
+    await expect(page.locator("text=장바구니에 추가되었습니다")).toBeVisible();
+  });
+
+  test("Toast 3초 후 자동 사라짐", async ({ page }) => {
+    await page.route("**/localhost:3001/products", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          {
+            id: 1,
+            name: "노트북",
+            price: 1000000,
+            category: "electronics",
+            description: "노트북 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 10,
+          },
+        ]),
+      });
+    });
+
+    await page.goto("/");
+    await page.waitForSelector(".product-card");
+
+    // "장바구니 담기" 버튼 클릭
+    await page.click('button:has-text("장바구니 담기")');
+
+    // Toast 표시 확인
+    await expect(page.locator("text=장바구니에 추가되었습니다")).toBeVisible();
+
+    // 3초 대기
+    await page.waitForTimeout(3100);
+
+    // Toast 사라짐 확인
+    await expect(
+      page.locator("text=장바구니에 추가되었습니다"),
+    ).not.toBeVisible();
+  });
+
+  test("여러 Toast 동시 표시 (최대 3개)", async ({ page }) => {
+    await page.route("**/localhost:3001/products", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          {
+            id: 1,
+            name: "노트북",
+            price: 1000000,
+            category: "electronics",
+            description: "노트북 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 10,
+          },
+          {
+            id: 2,
+            name: "키보드",
+            price: 50000,
+            category: "electronics",
+            description: "키보드 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 20,
+          },
+          {
+            id: 3,
+            name: "마우스",
+            price: 30000,
+            category: "electronics",
+            description: "마우스 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 15,
+          },
+          {
+            id: 4,
+            name: "모니터",
+            price: 500000,
+            category: "electronics",
+            description: "모니터 설명",
+            image: "https://via.placeholder.com/300",
+            stock: 8,
+          },
+        ]),
+      });
+    });
+
+    await page.goto("/");
+    await page.waitForSelector(".product-card");
+
+    // 4개 상품 연속 추가
+    await page
+      .locator('[data-id="1"] button:has-text("장바구니 담기")')
+      .click();
+    await page
+      .locator('[data-id="2"] button:has-text("장바구니 담기")')
+      .click();
+    await page
+      .locator('[data-id="3"] button:has-text("장바구니 담기")')
+      .click();
+    await page
+      .locator('[data-id="4"] button:has-text("장바구니 담기")')
+      .click();
+
+    // Toast 컨테이너에서 Toast 개수 확인 (최대 3개)
+    const toasts = page.locator(".fixed.top-4.right-4 > div");
+    const count = await toasts.count();
+    expect(count).toBeLessThanOrEqual(3);
+  });
+});
+
 test.describe("페이지네이션", () => {
   test("페이지 이동", async ({ page }) => {
     // 25개 상품으로 모킹 (12개씩 3페이지)
