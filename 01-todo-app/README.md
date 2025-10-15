@@ -1,15 +1,38 @@
 # 프로젝트 1: 할 일 관리 앱 (Todo List)
 
+> Playwright E2E 테스트 학습을 위한 첫 번째 프로젝트
+
+## 📸 프로젝트 스크린샷
+
+### 초기 화면
+![초기 화면](docs/images/01-empty-state.png)
+
+### Todo 추가
+![Todo 입력](docs/images/02-input-filled.png)
+
+### Todo 목록
+![Todo 목록](docs/images/03-todo-list.png)
+
+### 완료 체크
+![완료 체크](docs/images/04-todo-completed.png)
+
+### 필터링
+![필터링](docs/images/05-filter-all.png)
+
+### 모바일 화면
+![모바일](docs/images/10-mobile-view.png)
+
+---
+
 ## 📋 프로젝트 개요
 
 **난이도**: ⭐ 초급  
-**개발 시간**: 1-2일  
+**개발 시간**: 1일 (완료)  
 **Playwright 학습 효과**: ⭐⭐  
 **실무 유사도**: ⭐⭐
 
 ## 🎯 학습 목표
 
-이 프로젝트를 통해 다음을 학습합니다:
 - 기본 DOM 조작 테스트
 - LocalStorage 상태 확인
 - CSS 클래스 검증
