@@ -15,14 +15,19 @@ export default function Home() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
+  // URL에서 초기 상태 읽기
+  const searchFromURL = searchParams.get("search") || "";
+  const categoryFromURL = searchParams.get("category") || "all";
+  const pageFromURL = parseInt(searchParams.get("page") || "1", 10);
+
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(categoryFromURL);
+  const [searchQuery, setSearchQuery] = useState(searchFromURL);
   const [loading, setLoading] = useState(true);
 
   // URL에서 현재 페이지 읽기
-  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const currentPage = pageFromURL;
 
   // 페이지 번호 유효성 검사
   const validPage = Math.max(1, isNaN(currentPage) ? 1 : currentPage);
@@ -65,28 +70,53 @@ export default function Home() {
     setFilteredProducts(filtered);
   };
 
+  // URL 업데이트 헬퍼 함수
+  const updateURL = (updates: {
+    search?: string;
+    category?: string;
+    page?: number;
+  }) => {
+    const params = new URLSearchParams();
+
+    // 검색어 업데이트
+    const newSearch =
+      updates.search !== undefined ? updates.search : searchQuery;
+    if (newSearch.trim() !== "") {
+      params.set("search", newSearch);
+    }
+
+    // 카테고리 업데이트
+    const newCategory =
+      updates.category !== undefined ? updates.category : selectedCategory;
+    if (newCategory !== "all") {
+      params.set("category", newCategory);
+    }
+
+    // 페이지 업데이트
+    const newPage = updates.page !== undefined ? updates.page : validPage;
+    if (newPage !== 1) {
+      params.set("page", newPage.toString());
+    }
+
+    const queryString = params.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname);
+  };
+
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     // 카테고리 변경 시 1페이지로 초기화
-    handlePageChange(1);
+    updateURL({ category, page: 1 });
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+    const query = e.target.value;
+    setSearchQuery(query);
     // 검색어 변경 시 1페이지로 초기화
-    handlePageChange(1);
+    updateURL({ search: query, page: 1 });
   };
 
   const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", page.toString());
-
-    // 카테고리가 all이 아니면 URL에 포함
-    if (selectedCategory !== "all") {
-      params.set("category", selectedCategory);
-    }
-
-    router.push(`${pathname}?${params.toString()}`);
+    updateURL({ page });
 
     // 페이지 상단으로 스크롤
     window.scrollTo({ top: 0, behavior: "smooth" });
