@@ -1,10 +1,15 @@
-# 프로젝트 5: 실시간 채팅 앱 - 진행상황 문서
+# Chat App - 학습 회고
+
+> **목적**: Socket.IO 실시간 통신 및 Playwright 멀티 컨텍스트 학습
 
 ## 📅 개발 기간
-- 2025-10-07
+- 초기 설정: 2025-10-07
+- 상태: 미완성 (기본 구조만 설정)
 
-## 🎯 프로젝트 목표
-React + Socket.IO 기반 실시간 채팅 애플리케이션 및 Playwright 멀티 컨텍스트 테스트
+## 🎯 학습 목표
+- Socket.IO 실시간 양방향 통신 구현
+- Playwright 멀티 브라우저 컨텍스트 테스트
+- WebSocket 기반 채팅 애플리케이션 구조 이해
 
 ## 🛠 기술 스택
 - **Frontend**: React + TypeScript + Vite

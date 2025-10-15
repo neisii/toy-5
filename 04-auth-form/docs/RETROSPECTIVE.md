@@ -1,10 +1,15 @@
-# 프로젝트 4: 로그인/회원가입 폼 - 진행상황 문서
+# Auth Form - 학습 회고
+
+> **목적**: SvelteKit + Express 풀스택 인증 시스템 학습
 
 ## 📅 개발 기간
-- 2025-10-07
+- 개발 완료: 2025-10-07 (1일)
 
-## 🎯 프로젝트 목표
-SvelteKit + Express 기반 인증 시스템 구현 및 Playwright E2E 테스트
+## 🎯 학습 목표
+- SvelteKit + Express 풀스택 구조 이해
+- JWT 기반 인증 구현
+- Zod를 활용한 폼 검증
+- Playwright E2E 테스트 (인증 플로우)
 
 ## 🛠 기술 스택
 - **Frontend**: Svelte 5 + SvelteKit 2

@@ -2,7 +2,7 @@
 
 **Purpose**: Provide complete context for new Claude sessions to continue the Shopping Mall project.
 
-**Last Updated**: 2025-10-14
+**Last Updated**: 2025-10-15
 
 ---
 
@@ -17,7 +17,7 @@
 - Mock API: JSON Server
 - Testing: Playwright
 
-**Project Status**: Partially Complete (pagination and search not implemented)
+**Project Status**: 90% Complete (only product detail page remaining)
 
 **Methodology**: AI-DLC (see `../docs/ai-dlc.txt`)
 
@@ -27,13 +27,19 @@
 
 1. **Tone**: Informal (반말) between user and Claude
 2. **Documentation**: Fact-based (현상-원인-결과), avoid emojis, use numbering and bullets
-3. **Progress Tracking**: Always update this file after completing tasks
-4. **Approval**: Ask user approval when requirements are ambiguous
-5. **Troubleshooting**: Record all problem-solving processes
-6. **Phase Management**: Divide work into phases, document each phase
-7. **Images**: Use https://picsum.photos/ for sample images
-8. **Research**: Prioritize perplexity.ai, include reference URLs
-9. **AI-DLC**: Follow AI-Driven Development Life Cycle methodology
+3. **Documentation Structure**:
+   - **PROGRESS.md**: 전체 Phase 간결한 요약 (Phase별 5-10줄, 커밋 해시)
+   - **PHASE_N_PLAN.md**: Phase 시작 전 상세 계획 (요구사항, 기술적 접근, 예상 이슈)
+   - **PHASE_N_SUMMARY.md**: Phase 완료 후 상세 회고 (구현 내용, 트러블슈팅, 코드 예시)
+   - **RETROSPECTIVE.md**: 전체 프로젝트 학습 회고 (학습 포인트, 재사용 패턴, 통계)
+   - **SESSION_CONTEXT.md**: Claude 세션용 스냅샷 (현재 상태, 다음 작업)
+4. **Progress Tracking**: Always update this file after completing tasks
+5. **Approval**: Ask user approval when requirements are ambiguous
+6. **Troubleshooting**: Record all problem-solving processes
+7. **Phase Management**: Divide work into phases, document each phase
+8. **Images**: Use https://picsum.photos/ for sample images
+9. **Research**: Prioritize perplexity.ai, include reference URLs
+10. **AI-DLC**: Follow AI-Driven Development Life Cycle methodology
 
 ---
 
@@ -48,12 +54,12 @@
 6. **LocalStorage Persistence**: Cart data saved to localStorage
 7. **Empty State**: Display message when cart is empty
 8. **Pagination** (Phase 1 - 2025-10-14): Page navigation with URL sync, previous/next buttons
-9. **URL Parameters**: Page state reflected in URL (?page=2)
+9. **Search** (Phase 2 - 2025-10-15): Real-time product name search with category combination
+10. **Toast Notifications** (Phase 3 - 2025-10-15): Success alerts on cart actions (auto-dismiss in 3s, max 3 toasts)
+11. **URL State Management** (Phase 4 - 2025-10-15): All filters persist in URL, browser back/forward support
 
 ### Not Implemented
-1. **Search**: Product name search with debounce
-2. **Toast Notifications**: Alert on cart actions
-3. **Product Detail Page**: Individual product view
+1. **Product Detail Page**: Individual product view with `/product/[id]` route
 
 ---
 
@@ -61,36 +67,34 @@
 
 ```
 03-shopping-mall/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx              # Home (product list)
-│   │   ├── cart/
-│   │   │   └── page.tsx          # Cart page
-│   │   └── product/
-│   │       └── [id]/
-│   │           └── page.tsx      # Product detail (not implemented)
-│   ├── components/
-│   │   ├── ProductCard.tsx
-│   │   ├── ProductList.tsx
-│   │   ├── CategoryFilter.tsx
-│   │   ├── Pagination.tsx
-│   │   ├── SearchBar.tsx         # Not implemented
-│   │   ├── CartItem.tsx
-│   │   └── CartSummary.tsx
-│   ├── store/
-│   │   └── cartStore.ts          # Zustand store
-│   ├── services/
-│   │   └── productApi.ts
-│   ├── types/
-│   │   └── product.ts
-│   └── utils/
-│       └── format.ts
+├── app/
+│   ├── page.tsx              # Home (product list + search)
+│   ├── layout.tsx            # Root layout with ToastProvider
+│   ├── cart/
+│   │   └── page.tsx          # Cart page
+│   └── product/
+│       └── [id]/
+│           └── page.tsx      # Product detail (not implemented)
+├── components/
+│   ├── ProductCard.tsx       # Product card with toast on add
+│   ├── ProductList.tsx
+│   ├── CategoryFilter.tsx
+│   ├── Pagination.tsx        # Page navigation
+│   ├── CartIcon.tsx          # Cart icon with badge
+│   ├── Toast.tsx             # Individual toast component
+│   └── ToastContainer.tsx    # Toast manager
+├── context/
+│   └── ToastContext.tsx      # Toast state management
+├── store/
+│   └── cartStore.ts          # Zustand store
+├── types/
+│   └── product.ts
 ├── tests/
-│   ├── shop.spec.ts
-│   └── cart.spec.ts
-├── db.json                        # JSON Server data
+│   └── shop.spec.ts          # 18 E2E tests (all passing)
+├── db.json                   # JSON Server data (20 products)
 ├── docs/
-│   └── SESSION_CONTEXT.md
+│   ├── SESSION_CONTEXT.md
+│   └── PROGRESS.md           # Phase 1-4 detailed documentation
 └── README.md
 ```
 
@@ -167,76 +171,116 @@ interface Cart {
 
 ## Test Coverage
 
-### Completed Tests
-1. E2E cart scenario (add → view → update quantity → delete)
-2. Category filtering
-3. Quantity control in cart
-4. **Pagination navigation** (Phase 1 - 2025-10-14): Page movement, previous/next buttons
-5. **Category change resets to page 1** (Phase 1 - 2025-10-14)
+### Completed Tests (18 total, all passing)
 
-### Missing Tests
-1. Search functionality
-2. Product detail page
+**Basic Features** (3 tests)
+1. Product list display
+2. Category filtering
+3. E2E cart scenario (add → view → update quantity → delete)
+
+**Search** (4 tests - Phase 2)
+4. Search input with filtering
+5. Category + search combination
+6. Empty search results message
+7. Search with pagination
+
+**Toast Notifications** (3 tests - Phase 3)
+8. Toast display on cart add
+9. Toast auto-dismiss after 3 seconds
+10. Multiple toasts (max 3)
+
+**URL State Management** (5 tests - Phase 4)
+11. Load initial state from URL parameters
+12. Update URL on search input
+13. Update URL on category change
+14. Maintain multiple parameters (search + category + page)
+15. Browser back/forward state restoration
+
+**Pagination** (3 tests - Phase 1)
+16. Page navigation (1 → 2 → 3)
+17. Previous/Next buttons
+18. Category change resets to page 1
 
 **Test Files**: `tests/shop.spec.ts`
-
-**Total Tests**: 6 (all passing)
 
 ---
 
 ## Completed Phases
 
-### Phase 1: Setup
+### Phase 0: Initial Setup (2025-10-07)
 - Created Next.js 14 project with TypeScript
 - Installed dependencies (Tailwind, Zustand, JSON Server, Playwright)
 - Set up project structure
+- Implemented product list, category filtering, and cart functionality
+- Created basic E2E tests
 
-### Phase 2: Product List
-- Implemented product grid layout
-- Created ProductCard and ProductList components
-- Set up JSON Server with mock data
-- Connected to product API
+### Phase 1: Pagination (2025-10-14)
+**Commit**: `b06ab02`
+- Created Pagination component with previous/next buttons
+- Implemented URL sync for page parameter (?page=2)
+- Added page reset on category change
+- Added 3 E2E tests for pagination
 
-### Phase 3: Category Filtering
-- Added CategoryFilter component
-- Implemented filter state management
-- Connected filter to API query
+### Phase 2: Search (2025-10-15)
+**Commit**: `05446f1`
+- Added search input field in home page
+- Implemented real-time filtering (no debounce)
+- Combined search + category filtering (AND condition)
+- Search resets to page 1
+- Display search result count and empty state
+- Added 4 E2E tests for search
 
-### Phase 4: Shopping Cart
-- Created Zustand cart store
-- Implemented add/remove/update quantity
-- Built cart page with CartItem and CartSummary
-- Added LocalStorage persistence
+### Phase 3: Toast Notifications (2025-10-15)
+**Commit**: `7ce3227`
+- Created Toast context and provider
+- Built Toast and ToastContainer components
+- Integrated toast on cart add action
+- Auto-dismiss after 3 seconds
+- Max 3 toasts displayed simultaneously
+- Added 3 E2E tests for toast
 
-### Phase 5: Testing
-- Created E2E cart flow test
-- Added category filtering test
-- Verified quantity control
+### Phase 4: URL State Management (2025-10-15)
+**Commit**: `64844a0`
+- Load initial state from URL parameters
+- Created unified updateURL helper function
+- All filters persist in URL (search, category, page)
+- Browser back/forward support
+- URL cleanup (remove default values)
+- Added 5 E2E tests for URL state
 
 ---
 
 ## Pending Work
 
 ### High Priority
-1. **Pagination**: Implement page navigation with URL sync
-2. **Search**: Add search bar with debounce and URL param
-3. **Toast Notifications**: Alert user on cart actions
+1. **Product Detail Page**: `/product/[id]` route with product info and back navigation
 
-### Medium Priority
-4. **Product Detail Page**: `/product/[id]` route
-5. **URL State Management**: Reflect filters and pagination in URL
-6. **Loading States**: Show spinner during API calls
+### Medium Priority (Optional Enhancements)
+2. **Search Debounce**: Add 300ms debounce to reduce filter operations
+3. **Loading States**: Show spinner during API calls
+4. **Error Handling**: Display error messages for API failures
 
-### Low Priority
-7. **Error Handling**: Display error messages
-8. **Responsive Design**: Mobile optimization
-9. **SEO**: Meta tags and Open Graph
+### Low Priority (Optional Enhancements)
+5. **Sorting**: Sort by price (ascending/descending) and name
+6. **Price Range Filter**: Min/max price slider
+7. **Responsive Design**: Mobile optimization improvements
+8. **SEO**: Meta tags and Open Graph
+9. **Image Lazy Loading**: Optimize image loading performance
 
 ---
 
 ## Troubleshooting History
 
-No major issues recorded yet.
+### Phase 1: Pagination (2025-10-14)
+1. **Playwright strict mode violation**
+   - 현상: `text=상품 1` 선택자가 "상품 10", "상품 11" 등과 중복 매칭
+   - 원인: 부분 문자열 매칭으로 인한 다중 요소 선택
+   - 해결: `[data-id="1"]` 속성 선택자로 변경
+
+2. **toHaveCount.greaterThan() 메서드 오류**
+   - 현상: Playwright에 `toHaveCount.greaterThan()` 메서드 없음
+   - 원인: Playwright API 오해
+   - 해결: `.count()` 후 `expect().toBeGreaterThan()` 사용
 
 ---
 
@@ -277,5 +321,17 @@ npx playwright show-report
 
 ---
 
-**Version**: 0.7.0 (70% complete)  
+**Version**: 0.9.0 (90% complete)  
 **Status**: In Development
+
+---
+
+## Summary of Phase 1-4 Implementation
+
+All core features have been implemented and tested:
+- **18 E2E tests** passing (shop.spec.ts)
+- **4 major phases** completed in 2 days (2025-10-14 to 2025-10-15)
+- **Pagination + Search + Toast + URL State** fully functional
+- Only **product detail page** remains for full completion
+
+See `docs/PROGRESS.md` for detailed phase documentation.

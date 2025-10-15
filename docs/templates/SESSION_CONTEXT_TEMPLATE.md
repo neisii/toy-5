@@ -30,15 +30,21 @@
    - SESSION_CONTEXT.md: English (for Claude sessions)
    - Other docs: Korean (for user reading)
    - Style: Fact-based (현상-원인-결과), avoid emojis, use numbering/bullets
-3. **Phase Documentation Templates**:
+3. **Documentation Structure**:
+   - **PROGRESS.md**: 전체 Phase 간결한 요약 (Phase별 5-10줄)
+   - **PHASE_N_PLAN.md**: Phase 시작 전 상세 계획 (요구사항, 기술적 접근, 예상 이슈)
+   - **PHASE_N_SUMMARY.md**: Phase 완료 후 상세 회고 (구현 내용, 트러블슈팅, 코드 예시)
+   - **RETROSPECTIVE.md**: 전체 프로젝트 학습 회고 (학습 포인트, 재사용 패턴, 통계)
+   - **SESSION_CONTEXT.md**: Claude 세션용 스냅샷 (현재 상태, 다음 작업)
+4. **Phase Documentation Templates**:
    - Planning: Use `docs/templates/PHASE_PLAN_TEMPLATE.md`
    - Summary: Use `docs/templates/PHASE_SUMMARY_TEMPLATE.md`
    - Copy template and fill in sections for each phase
-4. **Progress Tracking**: Always update this file after completing tasks
-5. **Approval**: Ask user approval when requirements are ambiguous
-6. **Troubleshooting**: Record all problem-solving processes in TROUBLESHOOTING.md
-7. **Phase Management**: Divide work into phases, document each phase
-8. **Commit Convention**: Follow Conventional Commits with Scope (see `docs/COMMIT_CONVENTION.md`)
+5. **Progress Tracking**: Always update this file after completing tasks
+6. **Approval**: Ask user approval when requirements are ambiguous
+7. **Troubleshooting**: Record all problem-solving processes in TROUBLESHOOTING.md
+8. **Phase Management**: Divide work into phases, document each phase
+9. **Commit Convention**: Follow Conventional Commits with Scope (see `docs/COMMIT_CONVENTION.md`)
 
 ---
 
