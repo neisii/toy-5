@@ -30,11 +30,15 @@
    - SESSION_CONTEXT.md: English (for Claude sessions)
    - Other docs: Korean (for user reading)
    - Style: Fact-based (현상-원인-결과), avoid emojis, use numbering/bullets
-3. **Progress Tracking**: Always update this file after completing tasks
-4. **Approval**: Ask user approval when requirements are ambiguous
-5. **Troubleshooting**: Record all problem-solving processes in TROUBLESHOOTING.md
-6. **Phase Management**: Divide work into phases, document each phase
-7. **Commit Convention**: Follow Conventional Commits with Scope (see `docs/COMMIT_CONVENTION.md`)
+3. **Phase Documentation Templates**:
+   - Planning: Use `docs/templates/PHASE_PLAN_TEMPLATE.md`
+   - Summary: Use `docs/templates/PHASE_SUMMARY_TEMPLATE.md`
+   - Copy template and fill in sections for each phase
+4. **Progress Tracking**: Always update this file after completing tasks
+5. **Approval**: Ask user approval when requirements are ambiguous
+6. **Troubleshooting**: Record all problem-solving processes in TROUBLESHOOTING.md
+7. **Phase Management**: Divide work into phases, document each phase
+8. **Commit Convention**: Follow Conventional Commits with Scope (see `docs/COMMIT_CONVENTION.md`)
 
 ---
 
