@@ -103,16 +103,55 @@
 
 ---
 
+### Phase 4: URL 상태 관리 확장 (2025-10-15)
+**커밋**: `feat(shopping-mall): implement Phase 4 URL state management`
+
+#### 구현 내용
+1. **URL에서 초기 상태 읽기** (`app/page.tsx`)
+   - `searchParams.get()` 사용하여 search, category, page 파라미터 읽기
+   - State 초기화 시 URL 값 우선 적용
+   - 페이지 로드 시 URL 기반 필터링 자동 실행
+
+2. **updateURL 헬퍼 함수**
+   - 검색어, 카테고리, 페이지 통합 관리
+   - 기본값 제거 로직 (search="", category="all", page=1)
+   - 파라미터 선택적 업데이트
+   - URL 간결화 (`/?search=노트북` vs `/?search=노트북&page=1`)
+
+3. **핸들러 리팩토링**
+   - `handleSearchChange`: 검색어 URL 동기화
+   - `handleCategoryChange`: 카테고리 URL 동기화
+   - `handlePageChange`: 페이지 URL 동기화
+   - 모든 핸들러에서 `updateURL` 사용
+
+4. **브라우저 네비게이션 지원**
+   - 뒤로가기/앞으로가기 시 상태 복원
+   - Next.js App Router의 클라이언트 네비게이션 활용
+   - 페이지 새로고침 시 URL 기반 상태 복원
+
+5. **E2E 테스트 추가** (`tests/shop.spec.ts`)
+   - URL 파라미터로 초기 상태 로드 테스트
+   - 검색어 입력 시 URL 업데이트 테스트
+   - 카테고리 변경 시 URL 업데이트 테스트
+   - 복합 파라미터 유지 테스트
+   - 브라우저 뒤로가기로 상태 복원 테스트
+
+#### 테스트 결과
+- 전체 테스트: 18개 (URL 상태 관리 5개 추가)
+- 새로 추가된 테스트: 5개 (URL 상태 관리)
+
+---
+
 ## 다음 Phase 예정
 
-### Phase 4: URL 상태 관리 확장
-- 카테고리 필터 URL 반영 (`?category=electronics`)
-- 검색어 URL 반영 (`?search=키워드`)
-- 페이지 새로고침 시 상태 유지
-- 브라우저 뒤로가기/앞으로가기 지원
-
 ### Phase 5: 성능 최적화 (선택)
-- 검색 Debounce 적용
+- 검색 Debounce 적용 (300ms)
 - 이미지 Lazy Loading
 - React.memo 최적화
 - 번들 사이즈 분석
+
+### 추가 기능 (선택)
+- 정렬 기능 (가격순, 이름순)
+- 가격 범위 필터
+- 상품 상세 페이지
+- 리뷰/평점 기능
