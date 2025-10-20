@@ -2,11 +2,32 @@
 
 ## 📸 프로젝트 스크린샷
 
-### 1. 회원가입 페이지
-![회원가입 페이지](docs/images/01-signup-empty.png)
+### 1. 회원가입 페이지 - 빈 상태
+![회원가입 빈 상태](docs/images/01-signup-empty.png)
 
-### 2. 로그인 페이지
-![로그인 페이지](docs/images/05-login-empty.png)
+### 2. 회원가입 페이지 - 입력 완료
+![회원가입 입력 완료](docs/images/02-signup-filled.png)
+
+### 3. 회원가입 - 비밀번호 불일치 에러
+![비밀번호 불일치](docs/images/03-signup-error.png)
+
+### 4. 로그인 페이지 - 빈 상태
+![로그인 빈 상태](docs/images/04-login-empty.png)
+
+### 5. 로그인 페이지 - 입력 완료
+![로그인 입력 완료](docs/images/05-login-filled.png)
+
+### 6. 프로필 페이지 (로그인 후)
+![프로필 페이지](docs/images/06-profile-page.png)
+
+### 7. 로그인 실패 - 에러 메시지
+![로그인 에러](docs/images/07-login-error.png)
+
+### 8. 모바일 화면 - 회원가입
+![모바일 회원가입](docs/images/08-mobile-signup.png)
+
+### 9. 모바일 화면 - 로그인
+![모바일 로그인](docs/images/09-mobile-login.png)
 
 ---
 
