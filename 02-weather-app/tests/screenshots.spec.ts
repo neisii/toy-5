@@ -105,7 +105,7 @@ test.describe("Weather App Screenshots", () => {
     }
   });
 
-  test("07. 정확도 추적 페이지 - 데모 모드", async ({ page }) => {
+  test("07. 정확도 추적 페이지 - 데모 데이터 미리보기", async ({ page }) => {
     // Accuracy 페이지로 이동
     const accuracyLink = page.locator(
       'a:has-text("정확도"), a[href*="accuracy"]',
@@ -114,9 +114,17 @@ test.describe("Weather App Screenshots", () => {
     if ((await accuracyLink.count()) > 0) {
       await accuracyLink.click();
       await page.waitForLoadState("networkidle");
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(500);
 
-      // 데모 모드 활성화 (기본값이지만 명시적으로 설정)
+      // "데모 데이터로 미리보기" 버튼 클릭
+      const demoButton = page.locator(
+        'button:has-text("데모 데이터로 미리보기")',
+      );
+      if (await demoButton.isVisible()) {
+        await demoButton.click();
+        await page.waitForTimeout(1000);
+      }
+
       await page.screenshot({
         path: "docs/images/07-accuracy-page-demo.png",
         fullPage: true,
