@@ -1,127 +1,172 @@
-import { test, expect } from '@playwright/test';
+import { test } from "@playwright/test";
 
 /**
- * Weather App 스크린샷 촬영
+ * Weather App 스크린샷 촬영 (Phase 7 업데이트)
  *
  * 실행 방법:
  * 1. npm run dev (http://localhost:5173)
  * 2. npx playwright test screenshots.spec.ts
  */
 
-test.describe('Weather App Screenshots', () => {
+test.describe("Weather App Screenshots", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5173');
-    await page.waitForLoadState('networkidle');
-  });
-
-  test('1. 초기 화면', async ({ page }) => {
-    await page.screenshot({
-      path: 'docs/images/01-initial-screen.png',
-      fullPage: true,
+    await page.goto("http://localhost:5173");
+    // LocalStorage에 Mock provider 강제 설정
+    await page.evaluate(() => {
+      localStorage.setItem("selectedProvider", "mock");
     });
+    await page.reload();
+    await page.waitForLoadState("networkidle");
   });
 
-  test('2. 도시 검색 - 서울', async ({ page }) => {
-    // 검색어 입력
-    await page.fill('input[type="text"]', '서울');
+  test("01. 초기 화면", async ({ page }) => {
     await page.waitForTimeout(500);
-
     await page.screenshot({
-      path: 'docs/images/02-search-seoul.png',
+      path: "docs/images/01-initial-screen.png",
       fullPage: true,
     });
   });
 
-  test('3. 날씨 결과 표시', async ({ page }) => {
+  test("02. 서울 날씨 검색 결과 - 자전거 추천 포함", async ({ page }) => {
     // 서울 검색
-    await page.fill('input[type="text"]', 'Seoul');
+    await page.fill('input[type="text"]', "서울");
     await page.click('button:has-text("검색")');
 
     // 결과 로딩 대기
-    await page.waitForSelector('.weather-result, [class*="weather"]', { timeout: 5000 });
+    await page.waitForSelector("text=/온도|temperature/i", { timeout: 5000 });
     await page.waitForTimeout(1000);
 
     await page.screenshot({
-      path: 'docs/images/03-weather-result.png',
+      path: "docs/images/02-seoul-weather-with-cycling.png",
       fullPage: true,
     });
   });
 
-  test('4. Provider 선택 UI', async ({ page }) => {
-    // Provider 선택기가 있다면 캡처
-    const providerSelector = page.locator('select, [role="listbox"], button:has-text("Provider")');
+  test("03. 자전거 추천 점수 확대", async ({ page }) => {
+    // 서울 검색
+    await page.fill('input[type="text"]', "서울");
+    await page.click('button:has-text("검색")');
 
-    if (await providerSelector.count() > 0) {
-      await page.screenshot({
-        path: 'docs/images/04-provider-selector.png',
-        fullPage: true,
+    // 자전거 추천 섹션 대기
+    await page.waitForSelector("text=/자전거 라이딩 추천/i", { timeout: 5000 });
+    await page.waitForTimeout(500);
+
+    // 자전거 추천 컴포넌트만 스크린샷
+    const cyclingComponent = page.locator(".cycling-recommendation").first();
+    if (await cyclingComponent.isVisible()) {
+      await cyclingComponent.screenshot({
+        path: "docs/images/03-cycling-recommendation-detail.png",
       });
     }
   });
 
-  test('5. 다양한 도시 - 부산', async ({ page }) => {
-    await page.fill('input[type="text"]', 'Busan');
+  test("04. 부산 날씨", async ({ page }) => {
+    await page.fill('input[type="text"]', "부산");
     await page.click('button:has-text("검색")');
-    await page.waitForTimeout(2000);
+    await page.waitForSelector("text=/온도|temperature/i", { timeout: 5000 });
+    await page.waitForTimeout(1000);
 
     await page.screenshot({
-      path: 'docs/images/05-busan-weather.png',
+      path: "docs/images/04-busan-weather.png",
       fullPage: true,
     });
   });
 
-  test('6. 에러 상태 - 잘못된 도시', async ({ page }) => {
-    await page.fill('input[type="text"]', 'InvalidCityNameXYZ123');
-    await page.click('button:has-text("검색")');
-    await page.waitForTimeout(2000);
+  test("05. Provider 선택 UI", async ({ page }) => {
+    await page.waitForTimeout(500);
 
-    await page.screenshot({
-      path: 'docs/images/06-error-state.png',
-      fullPage: true,
-    });
+    // Provider selector 확대 캡처
+    const providerSelector = page
+      .locator('.provider-selector, [class*="provider"]')
+      .first();
+    if (await providerSelector.isVisible()) {
+      await providerSelector.screenshot({
+        path: "docs/images/05-provider-selector.png",
+      });
+    } else {
+      // 전체 화면 캡처
+      await page.screenshot({
+        path: "docs/images/05-provider-selector.png",
+        fullPage: false,
+        clip: { x: 0, y: 0, width: 800, height: 300 },
+      });
+    }
   });
 
-  test('7. 로딩 상태', async ({ page }) => {
-    // 검색 버튼 클릭 직후 로딩 상태 캡처
-    await page.fill('input[type="text"]', 'Tokyo');
+  test("06. Quota Status 표시", async ({ page }) => {
+    await page.waitForTimeout(500);
 
-    // 클릭과 동시에 스크린샷 (로딩 스피너 캡처 시도)
-    await Promise.all([
-      page.click('button:has-text("검색")'),
-      page.waitForTimeout(300),
-    ]);
-
-    await page.screenshot({
-      path: 'docs/images/07-loading-state.png',
-      fullPage: true,
-    });
+    // Quota status 확대 캡처
+    const quotaStatus = page.locator('.quota-status, [class*="quota"]').first();
+    if (await quotaStatus.isVisible()) {
+      await quotaStatus.screenshot({
+        path: "docs/images/06-quota-status.png",
+      });
+    }
   });
 
-  test('8. 모바일 화면', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 812 });
+  test("07. 정확도 추적 페이지", async ({ page }) => {
+    // Accuracy 페이지로 이동
+    const accuracyLink = page.locator(
+      'a:has-text("정확도"), a[href*="accuracy"]',
+    );
 
-    await page.fill('input[type="text"]', 'London');
-    await page.click('button:has-text("검색")');
-    await page.waitForTimeout(2000);
-
-    await page.screenshot({
-      path: 'docs/images/08-mobile-view.png',
-      fullPage: true,
-    });
-  });
-
-  test('9. 정확도 추적 페이지 (있다면)', async ({ page }) => {
-    // Accuracy 페이지가 있는지 확인
-    const accuracyLink = page.locator('a:has-text("Accuracy"), a:has-text("정확도")');
-
-    if (await accuracyLink.count() > 0) {
+    if ((await accuracyLink.count()) > 0) {
       await accuracyLink.click();
+      await page.waitForLoadState("networkidle");
       await page.waitForTimeout(1000);
 
       await page.screenshot({
-        path: 'docs/images/09-accuracy-page.png',
+        path: "docs/images/07-accuracy-page.png",
         fullPage: true,
       });
     }
+  });
+
+  test("08. 모바일 화면 - 초기", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(500);
+
+    await page.screenshot({
+      path: "docs/images/08-mobile-initial.png",
+      fullPage: true,
+    });
+  });
+
+  test("09. 모바일 화면 - 날씨 결과", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+
+    await page.fill('input[type="text"]', "서울");
+    await page.click('button:has-text("검색")');
+    await page.waitForSelector("text=/온도|temperature/i", { timeout: 5000 });
+    await page.waitForTimeout(1000);
+
+    await page.screenshot({
+      path: "docs/images/09-mobile-weather-result.png",
+      fullPage: true,
+    });
+  });
+
+  test("10. 에러 상태", async ({ page }) => {
+    // 잘못된 도시명으로 에러 유도 (Mock provider는 모든 도시 지원하므로 다른 방법 필요)
+    // Mock provider를 해제하고 실제 API 사용 시도
+    await page.evaluate(() => {
+      localStorage.setItem("selectedProvider", "weatherapi");
+    });
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+
+    await page.fill('input[type="text"]', "InvalidCity123XYZ");
+    await page.click('button:has-text("검색")');
+    await page.waitForTimeout(2000);
+
+    await page.screenshot({
+      path: "docs/images/10-error-state.png",
+      fullPage: true,
+    });
   });
 });

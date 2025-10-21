@@ -7,6 +7,38 @@
 **Playwright 학습 효과**: ⭐⭐⭐  
 **실무 유사도**: ⭐⭐⭐
 
+## 📸 프로젝트 스크린샷
+
+### 1. 초기 화면
+![초기 화면](docs/images/01-initial-screen.png)
+
+### 2. 서울 날씨 검색 결과 - 자전거 추천 포함 (Phase 7)
+![서울 날씨 및 자전거 추천](docs/images/02-seoul-weather-with-cycling.png)
+
+### 3. 자전거 추천 상세 화면
+![자전거 추천 점수](docs/images/03-cycling-recommendation-detail.png)
+
+### 4. 부산 날씨
+![부산 날씨](docs/images/04-busan-weather.png)
+
+### 5. Provider 선택 UI
+![Provider 선택](docs/images/05-provider-selector.png)
+
+### 6. Quota Status 표시
+![Quota Status](docs/images/06-quota-status.png)
+
+### 7. 정확도 추적 페이지 (Phase 6)
+![정확도 추적](docs/images/07-accuracy-page.png)
+
+### 8. 모바일 화면 - 초기
+![모바일 초기](docs/images/08-mobile-initial.png)
+
+### 9. 모바일 화면 - 날씨 결과
+![모바일 날씨 결과](docs/images/09-mobile-weather-result.png)
+
+### 10. 에러 상태
+![에러 상태](docs/images/10-error-state.png)
+
 ## 🎯 학습 목표
 
 이 프로젝트를 통해 다음을 학습합니다:
