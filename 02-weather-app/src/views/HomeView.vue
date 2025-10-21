@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import ProviderSelector from '@/components/ProviderSelector.vue';
 import QuotaStatus from '@/components/QuotaStatus.vue';
+import CyclingRecommendation from '@/components/CyclingRecommendation.vue';
 
 const weatherStore = useWeatherStore();
 
@@ -51,6 +52,8 @@ async function handleProviderChange(provider: ProviderType) {
         v-else-if="weatherStore.currentWeather"
         :weather="weatherStore.currentWeather"
       />
+
+      <CyclingRecommendation v-if="weatherStore.currentWeather" />
     </div>
   </div>
 </template>
