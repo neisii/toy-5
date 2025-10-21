@@ -27,8 +27,11 @@
 ### 6. Quota Status 표시
 ![Quota Status](docs/images/06-quota-status.png)
 
-### 7. 정확도 추적 페이지 (Phase 6)
-![정확도 추적](docs/images/07-accuracy-page.png)
+### 7. 정확도 추적 페이지 - 데모 모드 (Phase 6)
+![정확도 추적 데모](docs/images/07-accuracy-page-demo.png)
+
+### 7-2. 정확도 추적 페이지 - 실제 데이터
+![정확도 추적 실제](docs/images/07-accuracy-page-real.png)
 
 ### 8. 모바일 화면 - 초기
 ![모바일 초기](docs/images/08-mobile-initial.png)
