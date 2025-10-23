@@ -1,283 +1,138 @@
+<script setup lang="ts">
+import type { CustomPrediction } from '@/types/domain/customPrediction';
+
+const props = defineProps<{
+  prediction: CustomPrediction;
+}>();
+</script>
+
 <template>
   <div class="provider-comparison">
-    <div v-for="stat in sortedStats" :key="stat.provider" class="provider-card" :class="{ 'is-best': stat === bestStat }">
-      <div class="card-header">
-        <div class="provider-info">
-          <h3 class="provider-name">{{ providerDisplayName(stat.provider) }}</h3>
-          <span v-if="stat === bestStat" class="best-badge">🏆 최고 정확도</span>
-        </div>
-        <div class="overall-score">
-          <div class="score-value">{{ stat.overallScore.toFixed(1) }}</div>
-          <div class="score-label">종합 점수</div>
-        </div>
-      </div>
+    <h3>📊 Provider 비교</h3>
 
-      <div class="card-body">
-        <div class="metrics">
-          <div class="metric">
-            <div class="metric-icon">🌡️</div>
-            <div class="metric-content">
-              <div class="metric-label">평균 온도 오차</div>
-              <div class="metric-value">{{ stat.avgTempError.toFixed(1) }}°C</div>
-              <div class="metric-bar">
-                <div class="bar-fill" :style="{ width: tempErrorPercentage(stat) + '%', backgroundColor: tempErrorColor(stat) }"></div>
-              </div>
-            </div>
-          </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Provider</th>
+          <th>온도</th>
+          <th>습도</th>
+          <th>풍속</th>
+          <th>날씨</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="provider-name">OpenWeather</td>
+          <td>{{ Math.round(prediction.providers.openweather.current.temp_c) }}°C</td>
+          <td>{{ prediction.providers.openweather.current.humidity }}%</td>
+          <td>{{ (prediction.providers.openweather.current.wind_kph / 3.6).toFixed(1) }}</td>
+          <td>{{ prediction.providers.openweather.current.condition.main }}</td>
+        </tr>
+        <tr>
+          <td class="provider-name">WeatherAPI</td>
+          <td>{{ Math.round(prediction.providers.weatherapi.current.temp_c) }}°C</td>
+          <td>{{ prediction.providers.weatherapi.current.humidity }}%</td>
+          <td>{{ (prediction.providers.weatherapi.current.wind_kph / 3.6).toFixed(1) }}</td>
+          <td>{{ prediction.providers.weatherapi.current.condition.main }}</td>
+        </tr>
+        <tr>
+          <td class="provider-name">OpenMeteo</td>
+          <td>{{ Math.round(prediction.providers.openmeteo.current.temp_c) }}°C</td>
+          <td>-</td>
+          <td>{{ (prediction.providers.openmeteo.current.wind_kph / 3.6).toFixed(1) }}</td>
+          <td>{{ prediction.providers.openmeteo.current.condition.main }}</td>
+        </tr>
+        <tr class="ai-row">
+          <td class="provider-name">🤖 Custom AI</td>
+          <td><strong>{{ Math.round(prediction.current.temp_c) }}°C</strong></td>
+          <td><strong>{{ prediction.current.humidity }}%</strong></td>
+          <td><strong>{{ (prediction.current.wind_kph / 3.6).toFixed(1) }}</strong></td>
+          <td><strong>{{ prediction.current.condition.main }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
 
-          <div class="metric">
-            <div class="metric-icon">☁️</div>
-            <div class="metric-content">
-              <div class="metric-label">날씨 조건 일치율</div>
-              <div class="metric-value">{{ stat.conditionMatchRate.toFixed(0) }}%</div>
-              <div class="metric-bar">
-                <div class="bar-fill" :style="{ width: stat.conditionMatchRate + '%', backgroundColor: conditionColor(stat) }"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="metric">
-            <div class="metric-icon">💧</div>
-            <div class="metric-content">
-              <div class="metric-label">평균 습도 오차</div>
-              <div class="metric-value">{{ stat.avgHumidityError.toFixed(0) }}%</div>
-              <div class="metric-bar">
-                <div class="bar-fill" :style="{ width: humidityErrorPercentage(stat) + '%', backgroundColor: humidityErrorColor(stat) }"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="metric">
-            <div class="metric-icon">💨</div>
-            <div class="metric-content">
-              <div class="metric-label">평균 풍속 오차</div>
-              <div class="metric-value">{{ stat.avgWindSpeedError.toFixed(1) }} m/s</div>
-              <div class="metric-bar">
-                <div class="bar-fill" :style="{ width: windErrorPercentage(stat) + '%', backgroundColor: windErrorColor(stat) }"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <span class="data-points">📊 {{ stat.totalDays }}일 데이터</span>
-        </div>
-      </div>
+    <div class="weights-info">
+      <p class="info-title">가중치 설정:</p>
+      <ul>
+        <li>온도: OpenMeteo 45% + OpenWeather 40% + WeatherAPI 15%</li>
+        <li>습도: WeatherAPI 70% + OpenWeather 30%</li>
+        <li>풍속: OpenMeteo 60% + OpenWeather 25% + WeatherAPI 15%</li>
+        <li>날씨: OpenWeather 100%</li>
+      </ul>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed } from 'vue';
-import type { ProviderStats } from '@/composables/useAccuracyData';
-
-const props = defineProps<{
-  providerStats: ProviderStats[];
-}>();
-
-// Sort by overall score (descending)
-const sortedStats = computed(() => {
-  return [...props.providerStats].sort((a, b) => b.overallScore - a.overallScore);
-});
-
-const bestStat = computed(() => sortedStats.value[0]);
-
-function providerDisplayName(provider: string): string {
-  const names: Record<string, string> = {
-    openweather: 'OpenWeatherMap',
-    weatherapi: 'WeatherAPI',
-    openmeteo: 'Open-Meteo',
-  };
-  return names[provider] || provider;
-}
-
-// Temperature error percentage (0-5°C range)
-function tempErrorPercentage(stat: ProviderStats): number {
-  return Math.min(100, (stat.avgTempError / 5) * 100);
-}
-
-function tempErrorColor(stat: ProviderStats): string {
-  if (stat.avgTempError < 1.5) return '#10b981'; // green
-  if (stat.avgTempError < 3) return '#f59e0b'; // yellow
-  return '#ef4444'; // red
-}
-
-// Condition match color
-function conditionColor(stat: ProviderStats): string {
-  if (stat.conditionMatchRate >= 80) return '#10b981';
-  if (stat.conditionMatchRate >= 60) return '#f59e0b';
-  return '#ef4444';
-}
-
-// Humidity error percentage (0-20% range)
-function humidityErrorPercentage(stat: ProviderStats): number {
-  return Math.min(100, (stat.avgHumidityError / 20) * 100);
-}
-
-function humidityErrorColor(stat: ProviderStats): string {
-  if (stat.avgHumidityError < 5) return '#10b981';
-  if (stat.avgHumidityError < 10) return '#f59e0b';
-  return '#ef4444';
-}
-
-// Wind error percentage (0-3 m/s range)
-function windErrorPercentage(stat: ProviderStats): number {
-  return Math.min(100, (stat.avgWindSpeedError / 3) * 100);
-}
-
-function windErrorColor(stat: ProviderStats): string {
-  if (stat.avgWindSpeedError < 1) return '#10b981';
-  if (stat.avgWindSpeedError < 2) return '#f59e0b';
-  return '#ef4444';
-}
-</script>
-
 <style scoped>
 .provider-comparison {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
-.provider-card {
   background: white;
-  border: 2px solid #e2e8f0;
+  padding: 20px;
   border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.provider-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+h3 {
+  margin-bottom: 15px;
+  color: #374151;
 }
 
-.provider-card.is-best {
-  border-color: #8b5cf6;
-  background: linear-gradient(to bottom, #faf5ff 0%, white 100%);
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.card-header {
-  padding: 1.5rem;
-  background: #f7fafc;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+th {
+  background: #f3f4f6;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
 }
 
-.is-best .card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.provider-info {
-  flex: 1;
+td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #6b7280;
 }
 
 .provider-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0 0 0.25rem 0;
-  color: #1a202c;
-}
-
-.is-best .provider-name {
-  color: white;
-}
-
-.best-badge {
-  display: inline-block;
-  font-size: 0.875rem;
   font-weight: 600;
-  padding: 0.25rem 0.75rem;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
+  color: #374151;
 }
 
-.overall-score {
-  text-align: right;
+.ai-row {
+  background: #f0fdf4;
 }
 
-.score-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #8b5cf6;
-  line-height: 1;
+.ai-row td {
+  color: #059669;
 }
 
-.is-best .score-value {
-  color: white;
+.weights-info {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fef3c7;
+  border-radius: 8px;
+  border-left: 4px solid #f59e0b;
 }
 
-.score-label {
-  font-size: 0.75rem;
-  color: #718096;
-  margin-top: 0.25rem;
-}
-
-.is-best .score-label {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.card-body {
-  padding: 1.5rem;
-}
-
-.metrics {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.metric {
-  display: flex;
-  gap: 1rem;
-}
-
-.metric-icon {
-  font-size: 1.5rem;
-  width: 2rem;
-  text-align: center;
-}
-
-.metric-content {
-  flex: 1;
-}
-
-.metric-label {
-  font-size: 0.875rem;
-  color: #718096;
-  margin-bottom: 0.25rem;
-}
-
-.metric-value {
-  font-size: 1.125rem;
+.info-title {
   font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 0.5rem;
+  color: #92400e;
+  margin-bottom: 10px;
 }
 
-.metric-bar {
-  height: 6px;
-  background: #e2e8f0;
-  border-radius: 3px;
-  overflow: hidden;
+.weights-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.bar-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.6s ease, background-color 0.3s ease;
-}
-
-.card-footer {
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
-  text-align: center;
-  color: #718096;
-  font-size: 0.875rem;
+.weights-info li {
+  color: #78350f;
+  font-size: 0.85rem;
+  padding: 3px 0;
 }
 </style>

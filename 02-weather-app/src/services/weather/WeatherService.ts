@@ -11,7 +11,7 @@ import type {
 /**
  * Provider type identifier
  */
-export type ProviderType = "mock" | "openweather" | "weatherapi" | "openmeteo";
+export type ProviderType = "mock" | "openweather" | "weatherapi" | "openmeteo" | "custom";
 
 /**
  * Weather service configuration
@@ -371,3 +371,40 @@ export function createDefaultConfig(): WeatherServiceConfig {
     },
   };
 }
+
+  /**
+   * Get current weather from all 3 providers (for Custom AI prediction)
+   * 
+   * @param cityName - City name (Korean or English)
+   * @returns Object with weather data from all providers
+   */
+  async getAllProvidersWeather(cityName: string): Promise<{
+    openweather: CurrentWeather;
+    weatherapi: CurrentWeather;
+    openmeteo: CurrentWeather;
+  }> {
+    try {
+      // Create provider instances
+      const openweatherProvider = this.createProvider('openweather');
+      const weatherapiProvider = this.createProvider('weatherapi');
+      const openmeteoProvider = this.createProvider('openmeteo');
+
+      // Fetch from all providers in parallel
+      const [openweather, weatherapi, openmeteo] = await Promise.all([
+        openweatherProvider.getCurrentWeather(cityName),
+        weatherapiProvider.getCurrentWeather(cityName),
+        openmeteoProvider.getCurrentWeather(cityName),
+      ]);
+
+      return {
+        openweather,
+        weatherapi,
+        openmeteo,
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to get multi-provider weather: ${error.message}`);
+      }
+      throw new Error('Failed to get multi-provider weather: Unknown error');
+    }
+  }

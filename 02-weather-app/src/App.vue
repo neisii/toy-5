@@ -12,6 +12,7 @@ import { RouterLink, RouterView } from 'vue-router';
         </div>
         <div class="nav-links">
           <RouterLink to="/" class="nav-link">날씨 검색</RouterLink>
+          <RouterLink to="/ai-prediction" class="nav-link">🤖 AI 예측</RouterLink>
           <RouterLink to="/accuracy" class="nav-link">정확도 분석</RouterLink>
         </div>
       </div>

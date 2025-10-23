@@ -332,6 +332,27 @@ interface OpenMeteoRequest {
 }
 ```
 
+#### ⚠️ 중요: Open-Meteo Forecast API 습도 제한사항
+
+**검증 완료 (2025-10-23)**:
+- Open-Meteo Forecast API는 습도 데이터를 제공하지 **않습니다**
+- 이는 버그가 아니라 **API 사양**입니다
+- 모든 예보 응답에서 습도 관련 필드 누락
+
+**영향**:
+- Forecast API 사용 시 습도 예측 불가능
+- 습도가 중요한 경우 다른 Provider 사용 필수
+- 정확도 분석에서 습도 항목 제외됨
+
+**대안**:
+1. Current Weather API 사용 (습도 포함)
+2. WeatherAPI 또는 OpenWeather 사용
+3. Multi-provider 전략으로 습도만 별도 수집
+
+**참고**: 9일간 데이터 수집 결과, 모든 Forecast API 응답에서 습도 0% 반환 확인
+- 원인: API 파라미터 설정 오류가 아닌 API 자체 미지원
+- 문서: https://open-meteo.com/en/docs (Forecast API는 온도/풍속/강수/날씨코드만 제공)
+
 #### Weather Code (WMO 표준)
 ```
 0: Clear sky (맑음)
