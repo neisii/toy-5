@@ -123,5 +123,8 @@ export const useWeatherStore = defineStore("weather", () => {
     getAvailableProviders,
     getCurrentProviderName,
     clearError,
+
+    // Service (for advanced use cases like custom AI prediction)
+    weatherService,
   };
 });

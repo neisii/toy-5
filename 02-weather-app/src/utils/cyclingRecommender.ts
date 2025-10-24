@@ -13,6 +13,7 @@
  */
 
 import type { CurrentWeather } from "@/types/domain/weather";
+import type { CustomPrediction } from "@/types/domain/customPrediction";
 import type {
   CyclingScore,
   ClothingItem,
@@ -302,4 +303,41 @@ export function getRecommendationLevel(score: number): RecommendationLevel {
 export function isIdealWeather(weather: CurrentWeather): boolean {
   const score = calculateCyclingScore(weather);
   return score.score >= 80;
+}
+
+/**
+ * CustomPrediction을 CurrentWeather 형식으로 변환합니다.
+ *
+ * CustomPrediction은 여러 provider의 가중 평균이므로,
+ * 자전거 추천 시스템에서 더 정확한 점수를 계산할 수 있습니다.
+ *
+ * @param prediction - Custom AI 예측 결과
+ * @returns CurrentWeather 형식의 날씨 데이터
+ */
+export function convertCustomPredictionToWeather(
+  prediction: CustomPrediction,
+): CurrentWeather {
+  // CustomPrediction already extends CurrentWeather, so we can use it directly
+  // Just ensure it's a plain CurrentWeather type for compatibility
+  return {
+    location: prediction.location,
+    current: prediction.current,
+    weather: prediction.weather,
+    timestamp: prediction.timestamp,
+  };
+}
+
+/**
+ * CustomPrediction 기반 자전거 라이딩 점수 계산
+ *
+ * Custom AI 예측을 사용하여 더 정확한 자전거 추천을 제공합니다.
+ *
+ * @param prediction - Custom AI 예측 결과
+ * @returns 점수, 추천도, 이유, 권장 복장을 포함한 추천 정보
+ */
+export function calculateCyclingScoreFromCustomPrediction(
+  prediction: CustomPrediction,
+): CyclingScore {
+  const weather = convertCustomPredictionToWeather(prediction);
+  return calculateCyclingScore(weather);
 }

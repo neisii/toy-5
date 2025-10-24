@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useWeatherStore } from '@/stores/weather';
 import { customWeatherPredictor } from '@/services/weather/CustomWeatherPredictor';
 import CustomWeatherDisplay from '@/components/CustomWeatherDisplay.vue';
 import ProviderComparison from '@/components/ProviderComparison.vue';
 import ConfidenceBadge from '@/components/ConfidenceBadge.vue';
+import CyclingRecommendationFromAI from '@/components/CyclingRecommendationFromAI.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
@@ -25,7 +26,7 @@ const handleSearch = async (city: string) => {
   try {
     // Get weather from all 3 providers
     const allProvidersData = await weatherStore.weatherService.getAllProvidersWeather(city);
-    
+
     // Generate custom prediction
     const prediction = customWeatherPredictor.predict(allProvidersData);
     customPrediction.value = prediction;
@@ -55,6 +56,9 @@ const handleSearch = async (city: string) => {
 
       <!-- 커스텀 예측 날씨 정보 -->
       <CustomWeatherDisplay :prediction="customPrediction" />
+
+      <!-- AI 기반 자전거 추천 -->
+      <CyclingRecommendationFromAI :prediction="customPrediction" />
 
       <!-- Provider 비교 -->
       <ProviderComparison :prediction="customPrediction" />

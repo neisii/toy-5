@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CustomPrediction } from '@/types/domain/customPrediction';
 
-const props = defineProps<{
+defineProps<{
   prediction: CustomPrediction;
 }>();
 </script>
@@ -23,31 +23,31 @@ const props = defineProps<{
       <tbody>
         <tr>
           <td class="provider-name">OpenWeather</td>
-          <td>{{ Math.round(prediction.providers.openweather.current.temp_c) }}°C</td>
+          <td>{{ Math.round(prediction.providers.openweather.current.temperature) }}°C</td>
           <td>{{ prediction.providers.openweather.current.humidity }}%</td>
-          <td>{{ (prediction.providers.openweather.current.wind_kph / 3.6).toFixed(1) }}</td>
-          <td>{{ prediction.providers.openweather.current.condition.main }}</td>
+          <td>{{ prediction.providers.openweather.current.windSpeed.toFixed(1) }}</td>
+          <td>{{ prediction.providers.openweather.weather.main }}</td>
         </tr>
         <tr>
           <td class="provider-name">WeatherAPI</td>
-          <td>{{ Math.round(prediction.providers.weatherapi.current.temp_c) }}°C</td>
+          <td>{{ Math.round(prediction.providers.weatherapi.current.temperature) }}°C</td>
           <td>{{ prediction.providers.weatherapi.current.humidity }}%</td>
-          <td>{{ (prediction.providers.weatherapi.current.wind_kph / 3.6).toFixed(1) }}</td>
-          <td>{{ prediction.providers.weatherapi.current.condition.main }}</td>
+          <td>{{ prediction.providers.weatherapi.current.windSpeed.toFixed(1) }}</td>
+          <td>{{ prediction.providers.weatherapi.weather.main }}</td>
         </tr>
         <tr>
           <td class="provider-name">OpenMeteo</td>
-          <td>{{ Math.round(prediction.providers.openmeteo.current.temp_c) }}°C</td>
+          <td>{{ Math.round(prediction.providers.openmeteo.current.temperature) }}°C</td>
           <td>-</td>
-          <td>{{ (prediction.providers.openmeteo.current.wind_kph / 3.6).toFixed(1) }}</td>
-          <td>{{ prediction.providers.openmeteo.current.condition.main }}</td>
+          <td>{{ prediction.providers.openmeteo.current.windSpeed.toFixed(1) }}</td>
+          <td>{{ prediction.providers.openmeteo.weather.main }}</td>
         </tr>
         <tr class="ai-row">
           <td class="provider-name">🤖 Custom AI</td>
-          <td><strong>{{ Math.round(prediction.current.temp_c) }}°C</strong></td>
+          <td><strong>{{ Math.round(prediction.current.temperature) }}°C</strong></td>
           <td><strong>{{ prediction.current.humidity }}%</strong></td>
-          <td><strong>{{ (prediction.current.wind_kph / 3.6).toFixed(1) }}</strong></td>
-          <td><strong>{{ prediction.current.condition.main }}</strong></td>
+          <td><strong>{{ prediction.current.windSpeed.toFixed(1) }}</strong></td>
+          <td><strong>{{ prediction.weather.main }}</strong></td>
         </tr>
       </tbody>
     </table>

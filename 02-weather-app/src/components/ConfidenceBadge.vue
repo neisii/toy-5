@@ -10,16 +10,18 @@ const props = defineProps<{
 const level = computed(() => getConfidenceLevel(props.confidence.overall));
 const message = computed(() => CONFIDENCE_MESSAGES[level.value]);
 const color = computed(() => CONFIDENCE_COLORS[level.value]);
+const borderColor = computed(() => color.value.from);
+const scoreColor = computed(() => color.value.from);
 </script>
 
 <template>
-  <div class="confidence-badge" :style="{ borderColor: color }">
+  <div class="confidence-badge" :style="{ borderColor: borderColor }">
     <div class="badge-header">
       <span class="badge-icon">✓</span>
       <span class="badge-title">예측 신뢰도</span>
     </div>
 
-    <div class="confidence-score" :style="{ color }">
+    <div class="confidence-score" :style="{ color: scoreColor }">
       {{ confidence.overall }}%
     </div>
 

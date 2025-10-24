@@ -15,13 +15,13 @@ defineProps<{
 
     <div class="main-info">
       <div class="temperature">
-        <span class="temp-value">{{ Math.round(prediction.current.temp_c) }}°C</span>
-        <span class="feels-like">체감 {{ Math.round(prediction.current.feelslike_c) }}°C</span>
+        <span class="temp-value">{{ Math.round(prediction.current.temperature) }}°C</span>
+        <span class="feels-like">체감 {{ Math.round(prediction.current.feelsLike) }}°C</span>
       </div>
 
       <div class="condition">
-        <span class="condition-icon">{{ prediction.current.condition.icon }}</span>
-        <span class="condition-text">{{ prediction.current.condition.description_ko }}</span>
+        <span class="condition-icon">{{ prediction.weather.icon }}</span>
+        <span class="condition-text">{{ prediction.weather.descriptionKo }}</span>
       </div>
     </div>
 
@@ -32,7 +32,7 @@ defineProps<{
       </div>
       <div class="detail-item">
         <span class="label">풍속</span>
-        <span class="value">{{ (prediction.current.wind_kph / 3.6).toFixed(1) }} m/s</span>
+        <span class="value">{{ prediction.current.windSpeed.toFixed(1) }} m/s</span>
       </div>
     </div>
   </div>

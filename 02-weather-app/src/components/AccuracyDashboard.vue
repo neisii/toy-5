@@ -92,10 +92,11 @@
       </section>
 
       <!-- Provider Comparison -->
-      <section class="comparison-section">
+      <!-- Temporarily disabled - ProviderComparison repurposed for Custom AI prediction -->
+      <!-- <section class="comparison-section">
         <h2>프로바이더 비교</h2>
         <ProviderComparison :provider-stats="providerStats" />
-      </section>
+      </section> -->
 
       <!-- Accuracy Chart -->
       <section class="chart-section">
@@ -115,7 +116,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useAccuracyData } from '@/composables/useAccuracyData';
-import ProviderComparison from './ProviderComparison.vue';
+// import ProviderComparison from './ProviderComparison.vue'; // Repurposed for Custom AI prediction
 import AccuracyChart from './AccuracyChart.vue';
 import DailyAccuracyTable from './DailyAccuracyTable.vue';
 
@@ -125,7 +126,7 @@ const {
   loading,
   error,
   comparisons,
-  providerStats,
+  // providerStats, // Temporarily unused - ProviderComparison repurposed for Custom AI
   bestProvider,
   loadPredictions,
   loadObservations,

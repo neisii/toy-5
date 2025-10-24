@@ -1,8 +1,8 @@
 /**
  * Custom Weather Predictor Service
- * 
+ *
  * Multi-provider weighted average prediction system
- * 
+ *
  * @see docs/WEATHER_ACCURACY_ANALYSIS_REPORT.md
  * @performance 9-day backtesting results:
  * - Temperature: 1.86°C error (7.9% improvement)
@@ -17,20 +17,19 @@ import type {
   PredictionWeights,
   ConfidenceMetrics,
   PredictionRange,
-} from '@/types/domain/customPrediction';
-import type { CurrentWeather } from '@/types/domain/weather';
+} from "@/types/domain/customPrediction";
 
 /**
  * 가중 평균 계산 유틸리티
  */
 function weightedAverage(values: number[], weights: number[]): number {
   if (values.length !== weights.length) {
-    throw new Error('Values and weights must have the same length');
+    throw new Error("Values and weights must have the same length");
   }
-  
-  const sum = values.reduce((acc, val, i) => acc + val * weights[i], 0);
+
+  const sum = values.reduce((acc, val, i) => acc + val * (weights[i] ?? 0), 0);
   const totalWeight = weights.reduce((acc, w) => acc + w, 0);
-  
+
   return sum / totalWeight;
 }
 
@@ -46,7 +45,7 @@ function standardDeviation(values: number[]): number {
 
 /**
  * 신뢰도 계산 (표준편차 기반)
- * 
+ *
  * @param values - Provider별 예측값
  * @param maxStdDev - 최대 허용 표준편차 (이 값 이상이면 신뢰도 0)
  * @returns 신뢰도 (0-100)
@@ -59,7 +58,7 @@ function calculateConfidence(values: number[], maxStdDev: number): number {
 
 /**
  * Custom Weather Predictor
- * 
+ *
  * 각 Provider의 강점을 활용한 가중 평균 예측
  */
 export class CustomWeatherPredictor {
@@ -70,15 +69,15 @@ export class CustomWeatherPredictor {
     this.weights = weights || {
       temperature: {
         openmeteo: 0.45,
-        openweather: 0.40,
+        openweather: 0.4,
         weatherapi: 0.15,
       },
       humidity: {
-        weatherapi: 0.70,
-        openweather: 0.30,
+        weatherapi: 0.7,
+        openweather: 0.3,
       },
       windSpeed: {
-        openmeteo: 0.60,
+        openmeteo: 0.6,
         openweather: 0.25,
         weatherapi: 0.15,
       },
@@ -90,7 +89,7 @@ export class CustomWeatherPredictor {
 
   /**
    * 커스텀 날씨 예측 생성
-   * 
+   *
    * @param providers - 3개 provider의 현재 날씨 데이터
    * @returns 가중 평균 기반 커스텀 예측
    */
@@ -110,7 +109,7 @@ export class CustomWeatherPredictor {
     const feelsLike = this.calculateFeelsLike(providers);
 
     // 5. 날씨 상태 (OpenWeather 단독)
-    const condition = this.selectCondition(providers);
+    const weather = this.selectCondition(providers);
 
     // 6. 신뢰도 계산 (Phase 9)
     const confidence = this.calculateConfidenceMetrics(providers);
@@ -118,19 +117,28 @@ export class CustomWeatherPredictor {
     // 7. 위치 정보 (OpenWeather 우선)
     const location = openweather.location;
 
+    // 8. 기타 기상 데이터 (OpenWeather 기준)
+    const { pressure, windDirection, cloudiness, visibility, uvIndex } =
+      openweather.current;
+
     return {
       location,
       current: {
-        temp_c: temperature,
-        feelslike_c: feelsLike,
+        temperature,
+        feelsLike,
         humidity,
-        wind_kph: windSpeed * 3.6, // m/s → km/h
-        condition,
+        pressure,
+        windSpeed,
+        windDirection,
+        cloudiness,
+        visibility,
+        uvIndex,
       },
+      weather,
+      timestamp: new Date(),
       confidence,
       providers,
       weights: this.weights,
-      predictedAt: new Date().toISOString(),
     };
   }
 
@@ -139,9 +147,9 @@ export class CustomWeatherPredictor {
    */
   private calculateTemperature(providers: ProviderPredictions): number {
     const temps = [
-      providers.openmeteo.current.temp_c,
-      providers.openweather.current.temp_c,
-      providers.weatherapi.current.temp_c,
+      providers.openmeteo.current.temperature,
+      providers.openweather.current.temperature,
+      providers.weatherapi.current.temperature,
     ];
 
     const weights = [
@@ -175,9 +183,9 @@ export class CustomWeatherPredictor {
    */
   private calculateWindSpeed(providers: ProviderPredictions): number {
     const winds = [
-      providers.openmeteo.current.wind_kph / 3.6, // km/h → m/s
-      providers.openweather.current.wind_kph / 3.6,
-      providers.weatherapi.current.wind_kph / 3.6,
+      providers.openmeteo.current.windSpeed,
+      providers.openweather.current.windSpeed,
+      providers.weatherapi.current.windSpeed,
     ];
 
     const weights = [
@@ -194,9 +202,9 @@ export class CustomWeatherPredictor {
    */
   private calculateFeelsLike(providers: ProviderPredictions): number {
     const feelsLikes = [
-      providers.openmeteo.current.feelslike_c,
-      providers.openweather.current.feelslike_c,
-      providers.weatherapi.current.feelslike_c,
+      providers.openmeteo.current.feelsLike,
+      providers.openweather.current.feelsLike,
+      providers.weatherapi.current.feelsLike,
     ];
 
     const weights = [
@@ -212,20 +220,20 @@ export class CustomWeatherPredictor {
    * 날씨 상태 선택 (OpenWeather 100%)
    */
   private selectCondition(providers: ProviderPredictions) {
-    return providers.openweather.current.condition;
+    return providers.openweather.weather;
   }
 
   /**
    * 신뢰도 메트릭 계산 (Phase 9)
    */
   private calculateConfidenceMetrics(
-    providers: ProviderPredictions
+    providers: ProviderPredictions,
   ): ConfidenceMetrics {
     // 온도 신뢰도
     const temps = [
-      providers.openweather.current.temp_c,
-      providers.weatherapi.current.temp_c,
-      providers.openmeteo.current.temp_c,
+      providers.openweather.current.temperature,
+      providers.weatherapi.current.temperature,
+      providers.openmeteo.current.temperature,
     ];
     const tempStdDev = standardDeviation(temps);
     const tempConfidence = calculateConfidence(temps, 3.0);
@@ -240,30 +248,28 @@ export class CustomWeatherPredictor {
 
     // 풍속 신뢰도
     const winds = [
-      providers.openweather.current.wind_kph / 3.6,
-      providers.weatherapi.current.wind_kph / 3.6,
-      providers.openmeteo.current.wind_kph / 3.6,
+      providers.openweather.current.windSpeed,
+      providers.weatherapi.current.windSpeed,
+      providers.openmeteo.current.windSpeed,
     ];
     const windStdDev = standardDeviation(winds);
     const windConfidence = calculateConfidence(winds, 1.5);
 
     // 날씨 상태 신뢰도
     const conditions = [
-      providers.openweather.current.condition.main,
-      providers.weatherapi.current.condition.main,
-      providers.openmeteo.current.condition.main,
+      providers.openweather.weather.main,
+      providers.weatherapi.weather.main,
+      providers.openmeteo.weather.main,
     ];
     const uniqueConditions = new Set(conditions).size;
-    const conditionConfidence = Math.round(
-      ((4 - uniqueConditions) / 3) * 100
-    );
+    const conditionConfidence = Math.round(((4 - uniqueConditions) / 3) * 100);
 
     // 종합 신뢰도
     const overall = Math.round(
       tempConfidence * 0.4 +
         humidityConfidence * 0.2 +
         windConfidence * 0.2 +
-        conditionConfidence * 0.2
+        conditionConfidence * 0.2,
     );
 
     return {
@@ -285,29 +291,29 @@ export class CustomWeatherPredictor {
    */
   calculatePredictionRange(
     providers: ProviderPredictions,
-    metric: 'temperature' | 'humidity' | 'windSpeed'
+    metric: "temperature" | "humidity" | "windSpeed",
   ): PredictionRange {
     let values: number[];
 
     switch (metric) {
-      case 'temperature':
+      case "temperature":
         values = [
-          providers.openweather.current.temp_c,
-          providers.weatherapi.current.temp_c,
-          providers.openmeteo.current.temp_c,
+          providers.openweather.current.temperature,
+          providers.weatherapi.current.temperature,
+          providers.openmeteo.current.temperature,
         ];
         break;
-      case 'humidity':
+      case "humidity":
         values = [
           providers.openweather.current.humidity,
           providers.weatherapi.current.humidity,
         ];
         break;
-      case 'windSpeed':
+      case "windSpeed":
         values = [
-          providers.openweather.current.wind_kph / 3.6,
-          providers.weatherapi.current.wind_kph / 3.6,
-          providers.openmeteo.current.wind_kph / 3.6,
+          providers.openweather.current.windSpeed,
+          providers.weatherapi.current.windSpeed,
+          providers.openmeteo.current.windSpeed,
         ];
         break;
     }

@@ -1,67 +1,100 @@
-import { describe, it, expect } from 'vitest';
-import { CustomWeatherPredictor } from '@/services/weather/CustomWeatherPredictor';
-import type { ProviderPredictions } from '@/types/domain/customPrediction';
+import { describe, it, expect } from "vitest";
+import { CustomWeatherPredictor } from "@/services/weather/CustomWeatherPredictor";
+import type { ProviderPredictions } from "@/types/domain/customPrediction";
+import type { CurrentWeather } from "@/types/domain/weather";
 
-describe('CustomWeatherPredictor', () => {
+describe("CustomWeatherPredictor", () => {
   const predictor = new CustomWeatherPredictor();
 
+  const createMockWeather = (
+    temp: number,
+    feelsLike: number,
+    humidity: number,
+    windSpeed: number,
+    conditionMain: string,
+  ): CurrentWeather => ({
+    location: {
+      name: "Seoul",
+      nameKo: "서울",
+      country: "KR",
+      coordinates: { lat: 37.5683, lon: 126.9778 },
+      timezone: "Asia/Seoul",
+    },
+    current: {
+      temperature: temp,
+      feelsLike: feelsLike,
+      humidity: humidity,
+      pressure: 1013,
+      windSpeed: windSpeed,
+      windDirection: 180,
+      cloudiness: 50,
+      visibility: 10000,
+      uvIndex: 5,
+    },
+    weather: {
+      main: conditionMain,
+      description: "Partly cloudy",
+      descriptionKo: "부분 흐림",
+      icon: "02d",
+    },
+    timestamp: new Date("2025-10-23T12:00:00Z"),
+  });
+
   const mockProviders: ProviderPredictions = {
-    openweather: {
-      location: { name: 'Seoul', name_ko: '서울', country: 'KR', lat: 37.5683, lon: 126.9778, localtime: '2025-10-23 12:00' },
-      current: {
-        temp_c: 18,
-        feelslike_c: 17,
-        humidity: 68,
-        wind_kph: 7.2,
-        condition: { main: 'Clouds', description: '구름 많음', description_ko: '구름 많음', icon: '04d' }
-      }
-    },
-    weatherapi: {
-      location: { name: 'Seoul', name_ko: '서울', country: 'KR', lat: 37.5683, lon: 126.9778, localtime: '2025-10-23 12:00' },
-      current: {
-        temp_c: 17,
-        feelslike_c: 16,
-        humidity: 62,
-        wind_kph: 9.0,
-        condition: { main: 'Partly cloudy', description: '부분 흐림', description_ko: '부분 흐림', icon: '02d' }
-      }
-    },
-    openmeteo: {
-      location: { name: 'Seoul', name_ko: '서울', country: 'KR', lat: 37.5683, lon: 126.9778, localtime: '2025-10-23 12:00' },
-      current: {
-        temp_c: 19,
-        feelslike_c: 18,
-        humidity: 0,
-        wind_kph: 7.92,
-        condition: { main: '흐림', description: '흐림', description_ko: '흐림', icon: '03d' }
-      }
-    }
+    openweather: createMockWeather(18, 17, 68, 2.0, "Clouds"),
+    weatherapi: createMockWeather(17, 16, 62, 2.5, "Partly cloudy"),
+    openmeteo: createMockWeather(19, 18, 0, 2.2, "Cloudy"),
   };
 
-  it('should generate custom prediction', () => {
+  it("should generate custom prediction", () => {
     const prediction = predictor.predict(mockProviders);
     expect(prediction).toBeDefined();
-    expect(prediction.location.name).toBe('Seoul');
+    expect(prediction.location.name).toBe("Seoul");
   });
 
-  it('should calculate weighted temperature correctly', () => {
+  it("should calculate weighted temperature correctly", () => {
     const prediction = predictor.predict(mockProviders);
-    expect(prediction.current.temp_c).toBeCloseTo(18.3, 1);
+    // Expected: 19*0.45 + 18*0.40 + 17*0.15 = 8.55 + 7.2 + 2.55 = 18.3
+    expect(prediction.current.temperature).toBeCloseTo(18.0, 0);
   });
 
-  it('should calculate weighted humidity (excluding OpenMeteo)', () => {
+  it("should calculate weighted humidity (excluding OpenMeteo)", () => {
     const prediction = predictor.predict(mockProviders);
+    // Expected: 62*0.70 + 68*0.30 = 43.4 + 20.4 = 63.8 ≈ 64
     expect(prediction.current.humidity).toBeCloseTo(64, 0);
   });
 
-  it('should use OpenWeather condition', () => {
+  it("should calculate weighted wind speed correctly", () => {
     const prediction = predictor.predict(mockProviders);
-    expect(prediction.current.condition.main).toBe('Clouds');
+    // Expected: 2.2*0.60 + 2.0*0.25 + 2.5*0.15 = 1.32 + 0.5 + 0.375 = 2.195 ≈ 2.2
+    expect(prediction.current.windSpeed).toBeCloseTo(2.2, 1);
   });
 
-  it('should include confidence metrics', () => {
+  it("should use OpenWeather condition", () => {
+    const prediction = predictor.predict(mockProviders);
+    expect(prediction.weather.main).toBe("Clouds");
+  });
+
+  it("should include confidence metrics", () => {
     const prediction = predictor.predict(mockProviders);
     expect(prediction.confidence.overall).toBeGreaterThanOrEqual(0);
     expect(prediction.confidence.overall).toBeLessThanOrEqual(100);
+    expect(prediction.confidence.temperature).toBeDefined();
+    expect(prediction.confidence.humidity).toBeDefined();
+    expect(prediction.confidence.windSpeed).toBeDefined();
+  });
+
+  it("should include provider data", () => {
+    const prediction = predictor.predict(mockProviders);
+    expect(prediction.providers.openweather).toBeDefined();
+    expect(prediction.providers.weatherapi).toBeDefined();
+    expect(prediction.providers.openmeteo).toBeDefined();
+  });
+
+  it("should include weights", () => {
+    const prediction = predictor.predict(mockProviders);
+    expect(prediction.weights.temperature.openmeteo).toBe(0.45);
+    expect(prediction.weights.temperature.openweather).toBe(0.4);
+    expect(prediction.weights.temperature.weatherapi).toBe(0.15);
   });
 });

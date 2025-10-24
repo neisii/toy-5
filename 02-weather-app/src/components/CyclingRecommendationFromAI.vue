@@ -1,33 +1,39 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useWeatherStore } from '../stores/weather';
-import { calculateCyclingScore } from '../utils/cyclingRecommender';
-import { RECOMMENDATION_DISPLAY } from '../types/cycling';
-import type { CyclingScore } from '../types/cycling';
+import type { CustomPrediction } from '@/types/domain/customPrediction';
+import type { CyclingScore } from '@/types/cycling';
+import { calculateCyclingScoreFromCustomPrediction } from '@/utils/cyclingRecommender';
+import { RECOMMENDATION_DISPLAY } from '@/types/cycling';
 
-const weatherStore = useWeatherStore();
+const props = defineProps<{
+  prediction: CustomPrediction;
+}>();
 
-const cyclingScore = computed<CyclingScore | null>(() => {
-  if (!weatherStore.currentWeather) return null;
-  return calculateCyclingScore(weatherStore.currentWeather);
+const cyclingScore = computed<CyclingScore>(() => {
+  return calculateCyclingScoreFromCustomPrediction(props.prediction);
 });
 
 const display = computed(() => {
-  if (!cyclingScore.value) return null;
   return RECOMMENDATION_DISPLAY[cyclingScore.value.recommendation];
+});
+
+const confidenceNote = computed(() => {
+  const confidence = props.prediction.confidence.overall;
+  if (confidence >= 70) {
+    return '신뢰도 높은 예측으로 자전거 추천 점수를 계산했습니다';
+  } else if (confidence >= 40) {
+    return '보통 수준의 신뢰도로 자전거 추천 점수를 계산했습니다';
+  } else {
+    return '예측 신뢰도가 낮아 자전거 추천 점수가 부정확할 수 있습니다';
+  }
 });
 </script>
 
 <template>
-  <div v-if="cyclingScore && display" class="cycling-recommendation">
+  <div class="cycling-recommendation-ai">
     <div class="header">
-      <h2 class="cycling-title">🚴‍♂️ 자전거 라이딩 추천</h2>
-      <p class="provider-note">
-        현재 Provider: {{ weatherStore.currentProvider }}
-        <router-link to="/ai-prediction" class="ai-link">
-          🤖 AI 통합 예측으로 더 정확한 추천 받기
-        </router-link>
-      </p>
+      <h2 class="cycling-title">🚴‍♂️ AI 기반 자전거 라이딩 추천</h2>
+      <p class="confidence-note">{{ confidenceNote }}</p>
     </div>
 
     <div class="score-container">
@@ -67,25 +73,37 @@ const display = computed(() => {
         </span>
       </div>
     </div>
-  </div>
 
-  <div v-else class="cycling-recommendation loading">
-    <p>날씨 정보를 불러오는 중...</p>
+    <div class="ai-advantage">
+      <h3 class="section-title">AI 예측의 장점</h3>
+      <ul class="advantage-list">
+        <li>
+          <strong>온도:</strong> 3개 Provider 가중 평균으로
+          {{ prediction.confidence.uncertainty.temperature.toFixed(1) }}°C 오차 범위
+        </li>
+        <li>
+          <strong>풍속:</strong> OpenMeteo 중심으로
+          {{ prediction.confidence.uncertainty.windSpeed.toFixed(2) }} m/s 오차 범위
+        </li>
+        <li>
+          <strong>습도:</strong> WeatherAPI 중심으로
+          {{ prediction.confidence.uncertainty.humidity }}% 오차 범위
+        </li>
+        <li>
+          <strong>날씨 상태:</strong> OpenWeather 66.7% 정확도 (단일 Provider 대비 최고)
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.cycling-recommendation {
+.cycling-recommendation-ai {
   background: white;
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin: 20px 0;
-}
-
-.cycling-recommendation.loading {
-  text-align: center;
-  color: #666;
+  border: 2px solid #6366f1;
 }
 
 .header {
@@ -100,24 +118,10 @@ const display = computed(() => {
   color: #333;
 }
 
-.provider-note {
-  font-size: 13px;
-  color: #666;
-  margin: 0;
-}
-
-.ai-link {
-  display: block;
-  margin-top: 4px;
+.confidence-note {
+  font-size: 14px;
   color: #6366f1;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.ai-link:hover {
-  color: #4f46e5;
-  text-decoration: underline;
+  margin: 0;
 }
 
 .score-container {
@@ -161,7 +165,8 @@ const display = computed(() => {
 }
 
 .reasons-section,
-.clothing-section {
+.clothing-section,
+.ai-advantage {
   margin-top: 24px;
 }
 
@@ -189,7 +194,7 @@ const display = computed(() => {
 
 .reason-item:before {
   content: "•";
-  color: #667eea;
+  color: #6366f1;
   font-weight: bold;
   margin-right: 8px;
 }
@@ -213,7 +218,7 @@ const display = computed(() => {
 }
 
 .clothing-item.essential {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;
   font-weight: 500;
 }
@@ -231,16 +236,33 @@ const display = computed(() => {
   font-weight: 600;
 }
 
+.advantage-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.advantage-list li {
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 14px;
+}
+
+.advantage-list li strong {
+  color: #6366f1;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
-  .cycling-recommendation {
+  .cycling-recommendation-ai {
     padding: 16px;
-    margin: 16px 0;
   }
 
   .cycling-title {
     font-size: 20px;
-    margin-bottom: 20px;
   }
 
   .score-circle {
@@ -265,7 +287,8 @@ const display = computed(() => {
   }
 
   .reason-item,
-  .clothing-item {
+  .clothing-item,
+  .advantage-list li {
     font-size: 13px;
   }
 }
