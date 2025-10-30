@@ -11,9 +11,10 @@
 
 ### 🎯 현재 위치
 
-- **Cloudflare Workers 프록시**: 배포 완료 및 운영 중
-- **프론트엔드 통합**: 완료 및 로컬 테스트 통과
-- **다음 단계**: GitHub Pages 재배포 또는 AI 예측 기능 고도화
+- **Cloudflare Workers 프록시**: 배포 완료 및 운영 중 ✅
+- **프론트엔드 통합**: 완료 및 로컬 테스트 통과 ✅
+- **GitHub Pages 프로덕션 배포**: 완료 및 E2E 테스트 통과 ✅
+- **다음 단계**: AI 예측 기능 고도화 (Phase 13)
 
 ---
 
@@ -111,7 +112,7 @@
 
 11. **배포 URL**:
     - Cloudflare Workers: `https://weather-proxy.neisii.workers.dev`
-    - GitHub Pages: (재배포 대기)
+    - GitHub Pages: `https://neisii.github.io/toy-5/` ✅
     - 로컬 개발: `http://localhost:5173`
 
 ---
