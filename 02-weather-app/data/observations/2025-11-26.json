@@ -1,0 +1,80 @@
+{
+  "date": "2025-11-26",
+  "collected_at": "2025-11-26T02:21:56.993Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": 8.76,
+      "feels_like": 8.19,
+      "temp_min": 8.76,
+      "temp_max": 8.76,
+      "condition_main": "Clear",
+      "condition_description": "clear sky",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01d",
+      "humidity": 49,
+      "pressure": 1026,
+      "wind_speed": 1.54,
+      "wind_direction": 120,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2025-11-26T02:21:57.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": 9.1,
+      "feels_like": 9.3,
+      "temp_min": 9.1,
+      "temp_max": 9.1,
+      "condition_main": "Sunny",
+      "condition_description": "Sunny",
+      "condition_description_ko": "Sunny",
+      "condition_icon": "01d",
+      "humidity": 50,
+      "pressure": 1026,
+      "wind_speed": 1,
+      "wind_direction": 193,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 1.7,
+      "observed_at": "2025-11-26T02:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": 5.8,
+      "feels_like": 3.3,
+      "temp_min": 5.8,
+      "temp_max": 5.8,
+      "condition_main": "맑음",
+      "condition_description": "맑음",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01n",
+      "humidity": 67,
+      "pressure": 1013,
+      "wind_speed": 0.6111111111111112,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2025-11-26T11:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
