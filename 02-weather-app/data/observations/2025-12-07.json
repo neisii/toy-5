@@ -1,0 +1,80 @@
+{
+  "date": "2025-12-07",
+  "collected_at": "2025-12-07T02:34:22.189Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": 9.76,
+      "feels_like": 8.17,
+      "temp_min": 9.76,
+      "temp_max": 9.76,
+      "condition_main": "Mist",
+      "condition_description": "mist",
+      "condition_description_ko": "안개",
+      "condition_icon": "50d",
+      "humidity": 76,
+      "pressure": 1020,
+      "wind_speed": 3.09,
+      "wind_direction": 200,
+      "cloudiness": 20,
+      "visibility": 6000,
+      "uv_index": 0,
+      "observed_at": "2025-12-07T02:34:22.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": 6.1,
+      "feels_like": 5.6,
+      "temp_min": 6.1,
+      "temp_max": 6.1,
+      "condition_main": "Mist",
+      "condition_description": "Mist",
+      "condition_description_ko": "Mist",
+      "condition_icon": "50d",
+      "humidity": 93,
+      "pressure": 1022,
+      "wind_speed": 1.1944444444444444,
+      "wind_direction": 133,
+      "cloudiness": 25,
+      "visibility": 4800,
+      "uv_index": 1.5,
+      "observed_at": "2025-12-07T02:30:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": 5.4,
+      "feels_like": 3.6,
+      "temp_min": 5.4,
+      "temp_max": 5.4,
+      "condition_main": "부분적으로 흐림",
+      "condition_description": "부분적으로 흐림",
+      "condition_description_ko": "부분적으로 흐림",
+      "condition_icon": "02n",
+      "humidity": 94,
+      "pressure": 1013,
+      "wind_speed": 1,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2025-12-07T11:30:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
