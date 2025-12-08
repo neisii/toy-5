@@ -1,0 +1,80 @@
+{
+  "date": "2025-12-08",
+  "collected_at": "2025-12-08T02:26:03.186Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": 3.76,
+      "feels_like": -0.53,
+      "temp_min": 3.76,
+      "temp_max": 3.76,
+      "condition_main": "Clear",
+      "condition_description": "clear sky",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01d",
+      "humidity": 41,
+      "pressure": 1029,
+      "wind_speed": 5.66,
+      "wind_direction": 340,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2025-12-08T02:26:03.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": 4.3,
+      "feels_like": 1.9,
+      "temp_min": 4.3,
+      "temp_max": 4.3,
+      "condition_main": "Sunny",
+      "condition_description": "Sunny",
+      "condition_description_ko": "Sunny",
+      "condition_icon": "01d",
+      "humidity": 41,
+      "pressure": 1029,
+      "wind_speed": 2.694444444444444,
+      "wind_direction": 315,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 1.5,
+      "observed_at": "2025-12-08T02:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": 1.8,
+      "feels_like": -2.5,
+      "temp_min": 1.8,
+      "temp_max": 1.8,
+      "condition_main": "맑음",
+      "condition_description": "맑음",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01n",
+      "humidity": 45,
+      "pressure": 1013,
+      "wind_speed": 1.972222222222222,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2025-12-08T11:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
