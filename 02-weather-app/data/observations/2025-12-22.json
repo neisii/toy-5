@@ -1,0 +1,80 @@
+{
+  "date": "2025-12-22",
+  "collected_at": "2025-12-22T02:34:52.940Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": -0.24,
+      "feels_like": -0.24,
+      "temp_min": -0.24,
+      "temp_max": -0.24,
+      "condition_main": "Clear",
+      "condition_description": "clear sky",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01d",
+      "humidity": 51,
+      "pressure": 1031,
+      "wind_speed": 1.03,
+      "wind_direction": 330,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2025-12-22T02:32:21.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": 0.1,
+      "feels_like": -0.7,
+      "temp_min": 0.1,
+      "temp_max": 0.1,
+      "condition_main": "Sunny",
+      "condition_description": "Sunny",
+      "condition_description_ko": "Sunny",
+      "condition_icon": "01d",
+      "humidity": 51,
+      "pressure": 1033,
+      "wind_speed": 1,
+      "wind_direction": 70,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 1.3,
+      "observed_at": "2025-12-22T02:30:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": -2.2,
+      "feels_like": -6.3,
+      "temp_min": -2.2,
+      "temp_max": -2.2,
+      "condition_main": "맑음",
+      "condition_description": "맑음",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01n",
+      "humidity": 34,
+      "pressure": 1013,
+      "wind_speed": 0.8055555555555555,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2025-12-22T11:30:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
