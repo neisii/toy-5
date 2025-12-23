@@ -1,0 +1,80 @@
+{
+  "date": "2025-12-23",
+  "collected_at": "2025-12-23T02:30:07.279Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": 4.76,
+      "feels_like": 1.22,
+      "temp_min": 4.76,
+      "temp_max": 4.76,
+      "condition_main": "Clouds",
+      "condition_description": "overcast clouds",
+      "condition_description_ko": "흐림",
+      "condition_icon": "04d",
+      "humidity": 48,
+      "pressure": 1024,
+      "wind_speed": 4.63,
+      "wind_direction": 120,
+      "cloudiness": 100,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2025-12-23T02:29:20.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": 5.3,
+      "feels_like": 4.4,
+      "temp_min": 5.3,
+      "temp_max": 5.3,
+      "condition_main": "Overcast",
+      "condition_description": "Overcast",
+      "condition_description_ko": "Overcast",
+      "condition_icon": "04d",
+      "humidity": 48,
+      "pressure": 1023,
+      "wind_speed": 1.3888888888888888,
+      "wind_direction": 90,
+      "cloudiness": 100,
+      "visibility": 10000,
+      "uv_index": 1,
+      "observed_at": "2025-12-23T02:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": 1.5,
+      "feels_like": -1.7,
+      "temp_min": 1.5,
+      "temp_max": 1.5,
+      "condition_main": "부분적으로 흐림",
+      "condition_description": "부분적으로 흐림",
+      "condition_description_ko": "부분적으로 흐림",
+      "condition_icon": "02n",
+      "humidity": 69,
+      "pressure": 1013,
+      "wind_speed": 1.0555555555555556,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2025-12-23T11:30:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
