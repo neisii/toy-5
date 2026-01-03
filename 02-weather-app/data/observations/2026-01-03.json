@@ -1,0 +1,80 @@
+{
+  "date": "2026-01-03",
+  "collected_at": "2026-01-03T02:26:10.995Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": -3.24,
+      "feels_like": -5.52,
+      "temp_min": -3.24,
+      "temp_max": -3.24,
+      "condition_main": "Clear",
+      "condition_description": "clear sky",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01d",
+      "humidity": 54,
+      "pressure": 1028,
+      "wind_speed": 1.54,
+      "wind_direction": 150,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-01-03T02:17:03.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.566,
+        "lon": 126.9784
+      }
+    },
+    "weatherapi": {
+      "temp": -2.9,
+      "feels_like": -4.1,
+      "temp_min": -2.9,
+      "temp_max": -2.9,
+      "condition_main": "Sunny",
+      "condition_description": "Sunny",
+      "condition_description_ko": "Sunny",
+      "condition_icon": "01d",
+      "humidity": 54,
+      "pressure": 1029,
+      "wind_speed": 1,
+      "wind_direction": 86,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 1.1,
+      "observed_at": "2026-01-03T02:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": -4.4,
+      "feels_like": -8.1,
+      "temp_min": -4.4,
+      "temp_max": -4.4,
+      "condition_main": "맑음",
+      "condition_description": "맑음",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01n",
+      "humidity": 47,
+      "pressure": 1013,
+      "wind_speed": 0.2777777777777778,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-01-03T11:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
