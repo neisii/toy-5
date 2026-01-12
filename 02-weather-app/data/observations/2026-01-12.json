@@ -1,0 +1,80 @@
+{
+  "date": "2026-01-12",
+  "collected_at": "2026-01-12T02:39:23.280Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": -3.24,
+      "feels_like": -8.72,
+      "temp_min": -3.24,
+      "temp_max": -3.24,
+      "condition_main": "Clouds",
+      "condition_description": "broken clouds",
+      "condition_description_ko": "구름 많음",
+      "condition_icon": "04d",
+      "humidity": 54,
+      "pressure": 1020,
+      "wind_speed": 4.63,
+      "wind_direction": 130,
+      "cloudiness": 75,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-01-12T02:37:03.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": -2.8,
+      "feels_like": -5.5,
+      "temp_min": -2.8,
+      "temp_max": -2.8,
+      "condition_main": "Partly cloudy",
+      "condition_description": "Partly cloudy",
+      "condition_description_ko": "Partly cloudy",
+      "condition_icon": "02d",
+      "humidity": 54,
+      "pressure": 1021,
+      "wind_speed": 1.8055555555555556,
+      "wind_direction": 146,
+      "cloudiness": 75,
+      "visibility": 10000,
+      "uv_index": 1.3,
+      "observed_at": "2026-01-12T02:30:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": -4.3,
+      "feels_like": -8.7,
+      "temp_min": -4.3,
+      "temp_max": -4.3,
+      "condition_main": "대체로 맑음",
+      "condition_description": "대체로 맑음",
+      "condition_description_ko": "대체로 맑음",
+      "condition_icon": "01n",
+      "humidity": 50,
+      "pressure": 1013,
+      "wind_speed": 1.8333333333333333,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-01-12T11:30:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
