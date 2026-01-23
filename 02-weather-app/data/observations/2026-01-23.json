@@ -1,0 +1,80 @@
+{
+  "date": "2026-01-23",
+  "collected_at": "2026-01-23T02:34:48.666Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": -4.24,
+      "feels_like": -4.24,
+      "temp_min": -4.24,
+      "temp_max": -4.24,
+      "condition_main": "Clear",
+      "condition_description": "clear sky",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01d",
+      "humidity": 30,
+      "pressure": 1027,
+      "wind_speed": 1.03,
+      "wind_direction": 120,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-01-23T02:34:48.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": -3.8,
+      "feels_like": -5.1,
+      "temp_min": -3.8,
+      "temp_max": -3.8,
+      "condition_main": "Sunny",
+      "condition_description": "Sunny",
+      "condition_description_ko": "Sunny",
+      "condition_icon": "01d",
+      "humidity": 30,
+      "pressure": 1028,
+      "wind_speed": 1,
+      "wind_direction": 278,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 1.4,
+      "observed_at": "2026-01-23T02:30:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": -7,
+      "feels_like": -11,
+      "temp_min": -7,
+      "temp_max": -7,
+      "condition_main": "맑음",
+      "condition_description": "맑음",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01n",
+      "humidity": 32,
+      "pressure": 1013,
+      "wind_speed": 0.3055555555555556,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-01-23T11:30:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
