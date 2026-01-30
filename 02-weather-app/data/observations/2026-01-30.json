@@ -1,0 +1,80 @@
+{
+  "date": "2026-01-30",
+  "collected_at": "2026-01-30T03:12:56.396Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": -5.24,
+      "feels_like": -9.89,
+      "temp_min": -5.24,
+      "temp_max": -5.24,
+      "condition_main": "Clear",
+      "condition_description": "clear sky",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01d",
+      "humidity": 33,
+      "pressure": 1032,
+      "wind_speed": 3.09,
+      "wind_direction": 340,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-01-30T03:08:24.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": -6,
+      "feels_like": -11,
+      "temp_min": -6,
+      "temp_max": -6,
+      "condition_main": "Partly Cloudy",
+      "condition_description": "Partly Cloudy",
+      "condition_description_ko": "Partly Cloudy",
+      "condition_icon": "02d",
+      "humidity": 35,
+      "pressure": 1033,
+      "wind_speed": 3.3055555555555554,
+      "wind_direction": 297,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 2.1,
+      "observed_at": "2026-01-30T03:00:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": -6.8,
+      "feels_like": -11.6,
+      "temp_min": -6.8,
+      "temp_max": -6.8,
+      "condition_main": "대체로 맑음",
+      "condition_description": "대체로 맑음",
+      "condition_description_ko": "대체로 맑음",
+      "condition_icon": "01n",
+      "humidity": 37,
+      "pressure": 1013,
+      "wind_speed": 1.8888888888888888,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-01-30T12:00:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
