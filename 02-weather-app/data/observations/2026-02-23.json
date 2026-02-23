@@ -1,0 +1,80 @@
+{
+  "date": "2026-02-23",
+  "collected_at": "2026-02-23T03:26:13.304Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": 4.76,
+      "feels_like": 1.5,
+      "temp_min": 4.76,
+      "temp_max": 4.76,
+      "condition_main": "Clear",
+      "condition_description": "clear sky",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01d",
+      "humidity": 19,
+      "pressure": 1027,
+      "wind_speed": 4.12,
+      "wind_direction": 310,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-02-23T03:25:20.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": 5.1,
+      "feels_like": 2,
+      "temp_min": 5.1,
+      "temp_max": 5.1,
+      "condition_main": "Sunny",
+      "condition_description": "Sunny",
+      "condition_description_ko": "Sunny",
+      "condition_icon": "01d",
+      "humidity": 19,
+      "pressure": 1026,
+      "wind_speed": 4,
+      "wind_direction": 301,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 3.3,
+      "observed_at": "2026-02-23T03:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": 1,
+      "feels_like": -3.1,
+      "temp_min": 1,
+      "temp_max": 1,
+      "condition_main": "맑음",
+      "condition_description": "맑음",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01n",
+      "humidity": 27,
+      "pressure": 1013,
+      "wind_speed": 2.5,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-02-23T12:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
