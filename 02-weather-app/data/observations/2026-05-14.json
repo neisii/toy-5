@@ -1,0 +1,60 @@
+{
+  "date": "2026-05-14",
+  "collected_at": "2026-05-14T04:30:01.435Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": 29.76,
+      "feels_like": 28.92,
+      "temp_min": 29.76,
+      "temp_max": 29.76,
+      "condition_main": "Clear",
+      "condition_description": "clear sky",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01d",
+      "humidity": 35,
+      "pressure": 1014,
+      "wind_speed": 2.06,
+      "wind_direction": 230,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-05-14T04:25:59.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": 28.3,
+      "feels_like": 26.5,
+      "temp_min": 28.3,
+      "temp_max": 28.3,
+      "condition_main": "Sunny",
+      "condition_description": "Sunny",
+      "condition_description_ko": "Sunny",
+      "condition_icon": "01d",
+      "humidity": 40,
+      "pressure": 1015,
+      "wind_speed": 2.8055555555555554,
+      "wind_direction": 118,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 7.9,
+      "observed_at": "2026-05-14T04:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "error": "Failed to get weather: Open-Meteo 에러: Request failed with status code 502",
+      "observed_at": "2026-05-14T04:30:01.435Z"
+    }
+  }
+}
