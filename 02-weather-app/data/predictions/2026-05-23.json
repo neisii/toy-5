@@ -1,0 +1,50 @@
+{
+  "date": "2026-05-22",
+  "collected_at": "2026-05-22T02:00:42.888Z",
+  "target_date": "2026-05-23",
+  "city": "서울",
+  "predictions": {
+    "openweather": {
+      "temp_max": 19.69,
+      "temp_min": 14.22,
+      "temp_day": 18.1075,
+      "temp_night": 15.432500000000001,
+      "condition_main": "Clouds",
+      "condition_description": "scattered clouds",
+      "condition_description_ko": "구름 많음",
+      "condition_icon": "03n",
+      "humidity": 64,
+      "wind_speed": 1.4749999999999999,
+      "precipitation_probability": 100,
+      "predicted_at": "2026-05-22T02:00:43.189Z"
+    },
+    "weatherapi": {
+      "temp_max": 19.9,
+      "temp_min": 14.3,
+      "temp_day": 16.5,
+      "temp_night": 16.5,
+      "condition_main": "Patchy rain nearby",
+      "condition_description": "Patchy rain nearby",
+      "condition_description_ko": "Patchy rain nearby",
+      "condition_icon": "10d",
+      "humidity": 57,
+      "wind_speed": 2.888888888888889,
+      "precipitation_probability": 81,
+      "predicted_at": "2026-05-22T02:00:43.744Z"
+    },
+    "openmeteo": {
+      "temp_max": 23.2,
+      "temp_min": 13.9,
+      "temp_day": 18.55,
+      "temp_night": 13.9,
+      "condition_main": "흐림",
+      "condition_description": "흐림",
+      "condition_description_ko": "흐림",
+      "condition_icon": "03d",
+      "humidity": 0,
+      "wind_speed": 2,
+      "precipitation_probability": 41,
+      "predicted_at": "2026-05-22T02:00:47.090Z"
+    }
+  }
+}
