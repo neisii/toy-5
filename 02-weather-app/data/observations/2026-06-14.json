@@ -1,0 +1,80 @@
+{
+  "date": "2026-06-14",
+  "collected_at": "2026-06-14T05:17:02.559Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": 27.49,
+      "feels_like": 27.24,
+      "temp_min": 27.49,
+      "temp_max": 27.49,
+      "condition_main": "Clouds",
+      "condition_description": "overcast clouds",
+      "condition_description_ko": "흐림",
+      "condition_icon": "04d",
+      "humidity": 40,
+      "pressure": 1011,
+      "wind_speed": 3.95,
+      "wind_direction": 255,
+      "cloudiness": 95,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-06-14T05:17:03.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": 29.2,
+      "feels_like": 29.4,
+      "temp_min": 29.2,
+      "temp_max": 29.2,
+      "condition_main": "Partly cloudy",
+      "condition_description": "Partly cloudy",
+      "condition_description_ko": "Partly cloudy",
+      "condition_icon": "02d",
+      "humidity": 45,
+      "pressure": 1012,
+      "wind_speed": 3.6944444444444446,
+      "wind_direction": 258,
+      "cloudiness": 75,
+      "visibility": 10000,
+      "uv_index": 5.3,
+      "observed_at": "2026-06-14T05:00:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": 26.7,
+      "feels_like": 30.1,
+      "temp_min": 26.7,
+      "temp_max": 26.7,
+      "condition_main": "대체로 맑음",
+      "condition_description": "대체로 맑음",
+      "condition_description_ko": "대체로 맑음",
+      "condition_icon": "01n",
+      "humidity": 63,
+      "pressure": 1013,
+      "wind_speed": 0.8055555555555555,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-06-14T14:15:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
