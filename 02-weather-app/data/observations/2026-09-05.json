@@ -1,0 +1,80 @@
+{
+  "date": "2026-09-05",
+  "collected_at": "2026-09-05T04:52:07.220Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": 28.76,
+      "feels_like": 28.54,
+      "temp_min": 28.76,
+      "temp_max": 28.76,
+      "condition_main": "Clouds",
+      "condition_description": "scattered clouds",
+      "condition_description_ko": "구름 많음",
+      "condition_icon": "03d",
+      "humidity": 42,
+      "pressure": 1013,
+      "wind_speed": 5.66,
+      "wind_direction": 100,
+      "cloudiness": 32,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-09-05T04:50:02.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": 27.7,
+      "feels_like": 25.7,
+      "temp_min": 27.7,
+      "temp_max": 27.7,
+      "condition_main": "Overcast",
+      "condition_description": "Overcast",
+      "condition_description_ko": "Overcast",
+      "condition_icon": "04d",
+      "humidity": 39,
+      "pressure": 1014,
+      "wind_speed": 4.111111111111112,
+      "wind_direction": 87,
+      "cloudiness": 100,
+      "visibility": 10000,
+      "uv_index": 8,
+      "observed_at": "2026-09-05T04:45:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": 27.5,
+      "feels_like": 29.6,
+      "temp_min": 27.5,
+      "temp_max": 27.5,
+      "condition_main": "맑음",
+      "condition_description": "맑음",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01n",
+      "humidity": 53,
+      "pressure": 1013,
+      "wind_speed": 2.7777777777777777,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-09-05T13:45:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
