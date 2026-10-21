@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-21",
+  "collected_at": "2026-10-21T05:11:58.466Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": 15.76,
+      "feels_like": 14.33,
+      "temp_min": 15.76,
+      "temp_max": 15.76,
+      "condition_main": "Clouds",
+      "condition_description": "few clouds",
+      "condition_description_ko": "구름 조금",
+      "condition_icon": "02d",
+      "humidity": 36,
+      "pressure": 1019,
+      "wind_speed": 8.23,
+      "wind_direction": 310,
+      "cloudiness": 23,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-10-21T05:08:31.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5667,
+        "lon": 126.9783
+      }
+    },
+    "weatherapi": {
+      "temp": 14.8,
+      "feels_like": 7.1,
+      "temp_min": 14.8,
+      "temp_max": 14.8,
+      "condition_main": "Sunny",
+      "condition_description": "Sunny",
+      "condition_description_ko": "Sunny",
+      "condition_icon": "01d",
+      "humidity": 23,
+      "pressure": 1019,
+      "wind_speed": 7.194444444444444,
+      "wind_direction": 304,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 3.4,
+      "observed_at": "2026-10-21T05:00:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "temp": 14.6,
+      "feels_like": 11,
+      "temp_min": 14.6,
+      "temp_max": 14.6,
+      "condition_main": "맑음",
+      "condition_description": "맑음",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01n",
+      "humidity": 41,
+      "pressure": 1013,
+      "wind_speed": 3.8055555555555554,
+      "wind_direction": 0,
+      "cloudiness": 0,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-10-21T14:00:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "KR",
+        "lat": 37.55,
+        "lon": 127
+      }
+    }
+  }
+}
