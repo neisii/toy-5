@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-23",
+  "collected_at": "2026-11-23T04:22:55.330Z",
+  "target_date": "2026-11-24",
+  "city": "서울",
+  "predictions": {
+    "openweather": {
+      "temp_max": 2.42,
+      "temp_min": -3.37,
+      "temp_day": -1.0350000000000001,
+      "temp_night": -0.8275,
+      "condition_main": "Clear",
+      "condition_description": "clear sky",
+      "condition_description_ko": "맑음",
+      "condition_icon": "01n",
+      "humidity": 39,
+      "wind_speed": 4.3625,
+      "precipitation_probability": 0,
+      "predicted_at": "2026-11-23T04:22:55.717Z"
+    },
+    "weatherapi": {
+      "temp_max": 3.4,
+      "temp_min": -2.2,
+      "temp_day": 0.2,
+      "temp_night": 0.2,
+      "condition_main": "Sunny",
+      "condition_description": "Sunny",
+      "condition_description_ko": "Sunny",
+      "condition_icon": "01d",
+      "humidity": 49,
+      "wind_speed": 6.194444444444445,
+      "precipitation_probability": 7,
+      "predicted_at": "2026-11-23T04:22:56.106Z"
+    },
+    "openmeteo": {
+      "error": "Failed to get forecast: Open-Meteo 에러: read ETIMEDOUT",
+      "collected_at": "2026-11-23T04:22:55.330Z"
+    }
+  }
+}
