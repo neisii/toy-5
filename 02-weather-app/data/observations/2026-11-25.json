@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-25",
+  "collected_at": "2026-11-25T09:00:42.198Z",
+  "city": "서울",
+  "observations": {
+    "openweather": {
+      "temp": 7.76,
+      "feels_like": 6.12,
+      "temp_min": 7.76,
+      "temp_max": 7.76,
+      "condition_main": "Clouds",
+      "condition_description": "scattered clouds",
+      "condition_description_ko": "구름 많음",
+      "condition_icon": "03n",
+      "humidity": 57,
+      "pressure": 1019,
+      "wind_speed": 2.57,
+      "wind_direction": 200,
+      "cloudiness": 40,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-11-25T09:00:06.000Z",
+      "location": {
+        "name": "Seoul",
+        "name_ko": "서울",
+        "country": "KR",
+        "lat": 37.5683,
+        "lon": 126.9778
+      }
+    },
+    "weatherapi": {
+      "temp": 4.8,
+      "feels_like": 2.6,
+      "temp_min": 4.8,
+      "temp_max": 4.8,
+      "condition_main": "Sunny",
+      "condition_description": "Sunny",
+      "condition_description_ko": "Sunny",
+      "condition_icon": "01n",
+      "humidity": 65,
+      "pressure": 1019,
+      "wind_speed": 2.5,
+      "wind_direction": 210,
+      "cloudiness": 15,
+      "visibility": 10000,
+      "uv_index": 0,
+      "observed_at": "2026-11-25T08:45:00.000Z",
+      "location": {
+        "name": "서울",
+        "country": "South Korea",
+        "lat": 37.5664,
+        "lon": 126.9997
+      }
+    },
+    "openmeteo": {
+      "error": "Failed to get weather: Open-Meteo 에러: read ETIMEDOUT",
+      "observed_at": "2026-11-25T09:00:42.198Z"
+    }
+  }
+}
